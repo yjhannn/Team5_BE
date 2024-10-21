@@ -11,7 +11,7 @@ public record MyPageInfoResponse(
 ) {
 
     public static MyPageInfoResponse of(Member member, List<Category> categories) {
-        String gender = !member.getGender() ? "남자" : "여자";
+        String gender = member.convertGenderToString();
         String age = member.getAge().getName();
         List<CategoryResponse> categoryResponses = categories.stream()
             .map(c -> new CategoryResponse(c.getId(), c.getCategoryType().getName()))

@@ -25,10 +25,12 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
+@ActiveProfiles("local")
 class MemberServiceTest {
 
     @Autowired
@@ -56,13 +58,9 @@ class MemberServiceTest {
         member = demoMember();
         memberRepository.save(member);
 
-        List<Category> temp = categoriesNames.stream()
-            .map(cn -> new Category(null, cn))
-            .toList();
-        categories = categoryRepository.saveAll(temp);
-        System.out.println("출력: " + CategoryType.valueOf("FOOD"));
+        categories = categoryRepository.findAll();
         List<MemberCategory> memberCategories = categories.stream()
-            .map(c -> new MemberCategory(member, c))
+            .map(c -> MemberCategory.of(member, c))
             .limit(3)
             .toList();
 

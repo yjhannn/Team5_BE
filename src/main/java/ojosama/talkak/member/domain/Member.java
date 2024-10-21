@@ -70,4 +70,8 @@ public class Member {
         this.gender = !gender.equals("남자");
         this.age = newAge;
     }
+
+    public String convertGenderToString() {
+        return gender ? "남자" : "여자";
+    }
 }
