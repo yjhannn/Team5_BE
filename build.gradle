@@ -33,6 +33,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.ehcache:ehcache:3.9.9'
