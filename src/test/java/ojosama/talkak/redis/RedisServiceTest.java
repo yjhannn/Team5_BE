@@ -3,15 +3,19 @@ package ojosama.talkak.redis;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import ojosama.talkak.redis.innerkey.VideoHashKey;
 import ojosama.talkak.redis.key.VideoKey;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest(classes = {RedisConfig.class,
     RedisProperties.class,
@@ -19,7 +23,17 @@ import org.springframework.boot.test.context.SpringBootTest;
 class RedisServiceTest {
 
     @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+    @Autowired
     private RedisService redisService;
+
+    @BeforeEach
+    void setUp() {
+        Objects.requireNonNull(redisTemplate.getConnectionFactory())
+            .getConnection()
+            .serverCommands()
+            .flushAll();
+    }
 
     @DisplayName("Redis 간단한 읽기 테스트")
     @Test
