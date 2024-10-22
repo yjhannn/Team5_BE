@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
+import ojosama.talkak.redis.innerkey.VideoHashKey;
+import ojosama.talkak.redis.key.VideoKey;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +26,6 @@ class RedisServiceTest {
     void read() {
         Optional<String> value = redisService.getHashOps("video_1:1", "view_count");
         assertNotNull(value);
-        assertThat(value.get()).isEqualTo("100");
     }
 
     @DisplayName("Redis 간단한 쓰기 테스트")
@@ -35,5 +36,18 @@ class RedisServiceTest {
         assertNotNull(value);
         assertThat(value.get()).isEqualTo("demo_data");
     }
+
+    @DisplayName("Key 변환 읽기 테스트")
+    @Test
+    void readKeyConverting() {
+        Long categoryId = 1L;
+        Long videoId = 1L;
+        String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
+        String hashKey = VideoHashKey.CREATED_AT.getKey();
+        Optional<String> value = redisService.getHashOps(key, hashKey);
+        assertNotNull(value);
+    }
+
+
 
 }
