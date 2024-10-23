@@ -1,15 +1,12 @@
 package ojosama.talkak.redis.dto;
 
 public record ScoresDto(
-    Float score
+    Long categoryId,
+    Long videoId,
+    Float scores
 ) {
 
-    public static ScoresDto createScores() {
-        return new ScoresDto(0f);
+    public static ScoresDto of(Long categoryId, Long videoId, Float scores) {
+        return new ScoresDto(categoryId, videoId, scores);
     }
-
-    public static ScoresDto of(Float score) {
-        return new ScoresDto(score);
-    }
-
 }

@@ -12,7 +12,7 @@ public record EventQueueDto(
     String lastUpdatedAt
 ) {
 
-    public static EventQueueDto of(Long userId, Long categoryId, LocalDateTime lastUpdatedAt) {
-        return new EventQueueDto(userId, categoryId, HashConverter.fromDateTime(lastUpdatedAt));
+    public static EventQueueDto of(Long memberId, Long categoryId, LocalDateTime lastUpdatedAt) {
+        return new EventQueueDto(memberId, categoryId, HashConverter.fromDateTime(lastUpdatedAt));
     }
 }

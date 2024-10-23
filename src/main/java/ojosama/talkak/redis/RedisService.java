@@ -14,6 +14,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @Component
 public class RedisService {
@@ -46,6 +47,10 @@ public class RedisService {
 
     public void setHashOps(String key, Map<String, Object> data) {
         redisTemplate.opsForHash().putAll(key, data);
+    }
+
+    public void setHashValue(String key, String hashKey, Object value) {
+        redisTemplate.opsForHash().put(key, hashKey, value);
     }
 
     public Optional<String> getValues(String key) {
@@ -85,6 +90,10 @@ public class RedisService {
 
     public void deleteHashOps(String key, String hashKey) {
         redisTemplate.opsForHash().delete(key, hashKey);
+    }
+
+    public void deleteHash(String key) {
+        redisTemplate.delete(key);
     }
 
     public boolean checkExistValue(String value) {
