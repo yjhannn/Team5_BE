@@ -3,7 +3,7 @@ package ojosama.talkak.redis.repository;
 import java.time.LocalDateTime;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
-import ojosama.talkak.redis.dto.UserMetaDto;
+import ojosama.talkak.redis.domain.UserMeta;
 import ojosama.talkak.redis.innerkey.UserMetaHashKey;
 import ojosama.talkak.redis.key.UserMetaKey;
 import org.springframework.stereotype.Repository;
@@ -19,21 +19,21 @@ public class UserMetaRepository {
         this.hashConverter = hashConverter;
     }
 
-    public UserMetaDto save(Long memberId, UserMetaDto userMetaDto) {
+    public UserMeta save(Long memberId, UserMeta userMeta) {
         String key = UserMetaKey.USER_META.generateKey(memberId);
-        redisService.setHashOps(key, hashConverter.toMap(userMetaDto));
-        return hashConverter.FromMap(redisService.getHashOps(key), UserMetaDto.class);
+        redisService.setHashOps(key, hashConverter.toMap(userMeta));
+        return hashConverter.FromMap(redisService.getHashOps(key), UserMeta.class);
     }
 
-    public UserMetaDto findByMemberId(Long memberId) {
+    public UserMeta findByMemberId(Long memberId) {
         String key = UserMetaKey.USER_META.generateKey(memberId);
-        return hashConverter.FromMap(redisService.getHashOps(key), UserMetaDto.class);
+        return hashConverter.FromMap(redisService.getHashOps(key), UserMeta.class);
     }
 
-    public UserMetaDto updateLastUpdatedAt(Long memberId, LocalDateTime dateTime) {
+    public UserMeta updateLastUpdatedAt(Long memberId, LocalDateTime dateTime) {
         String key = UserMetaKey.USER_META.generateKey(memberId);
         redisService.setHashValue(key, UserMetaHashKey.LAST_UPDATED_AT.getKey(), HashConverter.fromDateTime(dateTime));
-        return hashConverter.FromMap(redisService.getHashOps(key), UserMetaDto.class);
+        return hashConverter.FromMap(redisService.getHashOps(key), UserMeta.class);
     }
 
     public void delete(Long memberId) {

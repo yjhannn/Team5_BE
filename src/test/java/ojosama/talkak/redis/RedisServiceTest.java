@@ -5,20 +5,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
-import ojosama.talkak.redis.dto.EventQueueDto;
-import ojosama.talkak.redis.dto.VideoInfoDto;
+import ojosama.talkak.redis.domain.EventQueue;
+import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.innerkey.ScoresSetKey;
-import ojosama.talkak.redis.key.EventQueueKey;
 import ojosama.talkak.redis.key.ScoresKey;
-import ojosama.talkak.redis.key.VideoKey;
 import ojosama.talkak.redis.repository.EventQueueRepository;
 import ojosama.talkak.redis.repository.ScoresRepository;
 import ojosama.talkak.redis.repository.VideoInfoRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,8 +54,8 @@ class RedisServiceTest {
     @DisplayName("Redis Hash 읽기/쓰기 테스트")
     @Test
     void hashTest() {
-        VideoInfoDto dto = VideoInfoDto.of(LocalDateTime.now(), 100L, 100L);
-        VideoInfoDto responseDto = videoInfoRepository.save(1L, 1L, dto);
+        VideoInfo dto = VideoInfo.of(LocalDateTime.now(), 100L, 100L);
+        VideoInfo responseDto = videoInfoRepository.save(1L, 1L, dto);
 
         assertThat(responseDto.createdAt()).isEqualTo(dto.createdAt());
         assertThat(responseDto.likeCount()).isEqualTo(dto.likeCount());
@@ -99,7 +95,7 @@ class RedisServiceTest {
         Long memberId = 1L;
         Long categoryId = 1L;
         LocalDateTime lastUpdatedAt = LocalDateTime.now();
-        EventQueueDto dto = EventQueueDto.of(memberId, categoryId, lastUpdatedAt);
+        EventQueue dto = EventQueue.of(memberId, categoryId, lastUpdatedAt);
         eventQueueRepository.save(dto);
         // 이벤트 큐에 읽기 작업을 수행하지는 않으므로, List 읽기는 구현하지 않았으므로
         // Redis 저장소에 잘 저장되었는지 직접 확인해야 한다.
