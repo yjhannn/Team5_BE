@@ -17,13 +17,13 @@ public class HashConverter {
         this.objectMapper = objectMapper;
     }
 
-    public Map<String, String> toMap(Object dto) {
+    public Map<String, Object> toMap(Object dto) {
         return objectMapper.convertValue(dto,
             new TypeReference<>() {
             });
     }
 
-    public <T> T FromMap(Map<String, String> map, Class<T> dtoClass) {
+    public <T> T FromMap(Map<String, Object> map, Class<T> dtoClass) {
         return objectMapper.convertValue(map, dtoClass);
     }
 

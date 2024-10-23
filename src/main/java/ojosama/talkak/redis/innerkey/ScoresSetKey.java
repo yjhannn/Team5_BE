@@ -10,15 +10,15 @@ public enum ScoresSetKey {
 
     private final String key;
 
-    public String generateKey(Long categoryId, Long memberId) {
-        return String.format(key, categoryId, memberId);
+    public String generateKey(Long categoryId, Long videoId) {
+        return String.format(key, categoryId, videoId);
     }
 
     public Long getCategoryId() {
         return Long.parseLong(key.split(":")[1]);
     }
 
-    public Long getMemberId() {
+    public Long getVideoId() {
         return Long.parseLong(key.split(":")[2]);
     }
 }

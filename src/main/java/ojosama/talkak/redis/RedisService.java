@@ -1,14 +1,19 @@
 package ojosama.talkak.redis;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import org.springframework.data.redis.core.HashOperations;
+import java.util.stream.Collectors;
+import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class RedisService {
@@ -29,10 +34,45 @@ public class RedisService {
         values.set(key, data, duration);
     }
 
+    public void setLValues(String key, Map<String, Object> data) {
+        ListOperations<String, Object> values = redisTemplate.opsForList();
+        values.rightPush(key, data);
+    }
+
+    public void setZValues(String key, String setKey, Float data) {
+        ZSetOperations<String, Object> values = redisTemplate.opsForZSet();
+        values.add(key, setKey, data);
+    }
+
+    public void setHashOps(String key, Map<String, Object> data) {
+        redisTemplate.opsForHash().putAll(key, data);
+    }
+
     public Optional<String> getValues(String key) {
         Object value = redisTemplate.opsForValue().get(key);
         return Optional.ofNullable(value)
             .map(Object::toString);
+    }
+
+    public Map<String, Object> getHashOps(String key) {
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(key);
+        return entries.entrySet().stream()
+            .collect(Collectors.toMap(
+                e -> String.valueOf(e.getKey()),
+                Map.Entry::getValue,
+                (prev, next) -> next,
+                HashMap::new
+            ));
+    }
+
+    public Optional<String> getHashOps(String key, String hashKey) {
+        Object value = redisTemplate.opsForHash().get(key, hashKey);
+        return Optional.ofNullable(value)
+            .map(Object::toString);
+    }
+
+    public Set<TypedTuple<Object>> getSortedSetOps(String key, long cnt) {
+        return redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, cnt - 1);
     }
 
     public void deleteValues(String key) {
@@ -41,16 +81,6 @@ public class RedisService {
 
     public void expireValues(String key, long timeout) {
         redisTemplate.expire(key, timeout, TimeUnit.MILLISECONDS);
-    }
-
-    public void setHashOps(String key, Map<String, String> data) {
-        redisTemplate.opsForHash().putAll(key, data);
-    }
-
-    public Optional<String> getHashOps(String key, String hashKey) {
-        Object value = redisTemplate.opsForHash().get(key, hashKey);
-        return Optional.ofNullable(value)
-            .map(Object::toString);
     }
 
     public void deleteHashOps(String key, String hashKey) {
