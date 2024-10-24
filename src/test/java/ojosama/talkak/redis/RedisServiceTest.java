@@ -57,9 +57,9 @@ class RedisServiceTest {
         VideoInfo dto = VideoInfo.of(LocalDateTime.now(), 100L, 100L);
         VideoInfo responseDto = videoInfoRepository.save(1L, 1L, dto);
 
-        assertThat(responseDto.createdAt()).isEqualTo(dto.createdAt());
-        assertThat(responseDto.likeCount()).isEqualTo(dto.likeCount());
-        assertThat(responseDto.viewCount()).isEqualTo(dto.viewCount());
+        assertThat(responseDto.getCreatedAt()).isEqualTo(dto.getCreatedAt());
+        assertThat(responseDto.getLikeCount()).isEqualTo(dto.getLikeCount());
+        assertThat(responseDto.getViewCount()).isEqualTo(dto.getViewCount());
     }
 
     @DisplayName("Redis Sorted Set 읽기/쓰기 테스트")
