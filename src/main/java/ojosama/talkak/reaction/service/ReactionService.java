@@ -6,7 +6,7 @@ import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.reaction.domain.Reaction;
 import ojosama.talkak.reaction.domain.ReactionId;
-import ojosama.talkak.reaction.repository.ReactionsRepository;
+import ojosama.talkak.reaction.repository.ReactionRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ReactionService {
 
-    private final ReactionsRepository reactionRepository;
+    private final ReactionRepository reactionRepository;
     private final MemberRepository memberRepository;
     private final VideoRepository videoRepository;
 
-    public ReactionService(ReactionsRepository reactionRepository, MemberRepository memberRepository,
+    public ReactionService(ReactionRepository reactionRepository, MemberRepository memberRepository,
         VideoRepository videoRepository) {
         this.reactionRepository = reactionRepository;
         this.memberRepository = memberRepository;

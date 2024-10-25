@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum ScoresSetKey {
-    SCORE("video:%s");
+    SCORE("%s");
 
     private final String key;
 
@@ -15,6 +15,6 @@ public enum ScoresSetKey {
     }
 
     public Long getVideoId(String key) {
-        return Long.parseLong(key.split(":")[1]);
+        return Long.valueOf(key);
     }
 }

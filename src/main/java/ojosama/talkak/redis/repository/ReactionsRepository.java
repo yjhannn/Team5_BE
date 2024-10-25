@@ -8,12 +8,12 @@ import ojosama.talkak.redis.key.ReactionKey;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ReactionRepository {
+public class ReactionsRepository {
 
     private final RedisService redisService;
     private final HashConverter hashConverter;
 
-    public ReactionRepository(RedisService redisService, HashConverter hashConverter) {
+    public ReactionsRepository(RedisService redisService, HashConverter hashConverter) {
         this.redisService = redisService;
         this.hashConverter = hashConverter;
     }
