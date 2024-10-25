@@ -4,22 +4,21 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Reaction {
+public class Reactions {
 
     private Integer watched;
     private Integer liked;
 
-    public static Reaction createReaction() {
-        return new Reaction(1, 0);
+    public static Reactions createReaction() {
+        return new Reactions(1, 0);
     }
 
-    public static Reaction of(Integer watched, Integer liked) {
-        return new Reaction(watched, liked);
+    public static Reactions of(Integer watched, Integer liked) {
+        return new Reactions(watched, liked);
     }
 
     public void toggleLike() {

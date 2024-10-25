@@ -2,7 +2,7 @@ package ojosama.talkak.redis.repository;
 
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
-import ojosama.talkak.redis.domain.Reaction;
+import ojosama.talkak.redis.domain.Reactions;
 import ojosama.talkak.redis.innerkey.ReactionHashKey;
 import ojosama.talkak.redis.key.ReactionKey;
 import org.springframework.stereotype.Repository;
@@ -18,21 +18,21 @@ public class ReactionRepository {
         this.hashConverter = hashConverter;
     }
 
-    public Reaction save(Long memberId, Long videoId, Reaction reaction) {
+    public Reactions save(Long memberId, Long videoId, Reactions reactions) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        redisService.setHashOps(key, hashConverter.toMap(reaction));
-        return hashConverter.FromMap(redisService.getHashOps(key), Reaction.class);
+        redisService.setHashOps(key, hashConverter.toMap(reactions));
+        return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
     }
 
-    public Reaction findByMemberIdAndVideoId(Long memberId, Long videoId) {
+    public Reactions findByMemberIdAndVideoId(Long memberId, Long videoId) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        return hashConverter.FromMap(redisService.getHashOps(key), Reaction.class);
+        return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
     }
 
-    public Reaction updateLiked(Long memberId, Long videoId, Integer liked) {
+    public Reactions updateLiked(Long memberId, Long videoId, Integer liked) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
         redisService.setHashValue(key, ReactionHashKey.LIKED.getKey(), liked);
-        return hashConverter.FromMap(redisService.getHashOps(key), Reaction.class);
+        return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
     }
 
     public void delete(Long memberId, Long videoId) {

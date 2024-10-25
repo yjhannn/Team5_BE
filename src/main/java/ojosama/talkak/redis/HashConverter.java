@@ -2,6 +2,7 @@ package ojosama.talkak.redis;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -14,6 +15,7 @@ public class HashConverter {
     private final ObjectMapper objectMapper;
 
     public HashConverter(ObjectMapper objectMapper) {
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
         this.objectMapper = objectMapper;
     }
 
