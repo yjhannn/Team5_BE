@@ -43,7 +43,6 @@ jobs:
       # 현재 디렉토리 구조 확인 (디버깅용)
       - name: Check directory structure
         run: |
-          ls -la ojosama-repo
           ls -la ojosama-repo/Team5_BE
           
       - name: Build Spring Boot
