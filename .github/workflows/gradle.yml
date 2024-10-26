@@ -69,5 +69,5 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /ojosama_repo
+            cd ojosama_repo
             sudo docker-compose up -d
