@@ -60,16 +60,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      # Docker Compose 빌드 및 푸시
-      - name: Build and push Docker images
-        working-directory: ./ojosama_repo
-        run: |
-          docker-compose build
-          docker-compose push
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
           
       # 배포 서버에 SSH로 접속하여 컨테이너 실행 (선택사항)
       - name: Deploy to server
@@ -80,5 +70,4 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /ojosama_repo
-            docker-compose pull
-            docker-compose up -d
+            sudo docker-compose up -d
