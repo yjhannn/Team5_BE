@@ -15,14 +15,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: ojosama-repo  # 상위 디렉토리 이름으로 체크아웃
-    
+          path: ojosama_repo  # 상위 디렉토리 이름으로 체크아웃
+      
+      # Spring Boot 프로젝트 체크아웃
+      - name: Checkout Spring boot Project
+        uses: actions/checkout@v4
+        with:
+          path: ojosama_repo/Team5_BE
       # 파이썬 프로젝트 체크아웃
       - name: Checkout Python project
         uses: actions/checkout@v4
         with:
           repository: anaconda77/recommend-algorithms
-          path: ojosama-repo/recommend-algorithms
+          path: ojosama_repo/recommend-algorithms
           token: ${{ secrets.RECOMMEND_ALGORITHMS_PAT }}
           
       # Spring Boot 빌드
@@ -35,18 +40,13 @@ jobs:
           
       - name: Create Spring Boot properties
         run: |
-          mkdir -p ./ojosama-repo/Team5_BE/src/main/resources
-          echo "${{ secrets.APPLICATION }}" > ./ojosama-repo/Team5_BE/src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-local.properties
-          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-oauth.properties
-      
-      # 현재 디렉토리 구조 확인 (디버깅용)
-      - name: Check directory structure
-        run: |
-          ls -la ojosama-repo/Team5_BE
+          mkdir -p ./ojosama_repo/Team5_BE/src/main/resources
+          echo "${{ secrets.APPLICATION }}" > ./ojosama_repo/Team5_BE/src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-local.properties
+          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-oauth.properties
           
       - name: Build Spring Boot
-        working-directory: ./ojosama-repo/Team5_BE
+        working-directory: ./ojosama_repo/Team5_BE
         run: |
           chmod +x gradlew
           ./gradlew clean build --exclude-task test
@@ -63,7 +63,7 @@ jobs:
       
       # Docker Compose 빌드 및 푸시
       - name: Build and push Docker images
-        working-directory: ./ojosama-repo
+        working-directory: ./ojosama_repo
         run: |
           docker-compose build
           docker-compose push
