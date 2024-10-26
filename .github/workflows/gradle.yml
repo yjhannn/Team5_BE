@@ -15,14 +15,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: ojosama-repo  # 상위 디렉토리 이름으로 체크아웃
-    
+          path: ojosama_repo  # 상위 디렉토리 이름으로 체크아웃
+      
+      # Spring Boot 프로젝트 체크아웃
+      - name: Checkout Spring boot Project
+        uses: actions/checkout@v4
+        with:
+          path: ojosama_repo/Team5_BE
       # 파이썬 프로젝트 체크아웃
       - name: Checkout Python project
         uses: actions/checkout@v4
         with:
           repository: anaconda77/recommend-algorithms
-          path: ojosama-repo/recommend-algorithms
+          path: ojosama_repo/recommend-algorithms
           token: ${{ secrets.RECOMMEND_ALGORITHMS_PAT }}
           
       # Spring Boot 빌드
@@ -35,13 +40,13 @@ jobs:
           
       - name: Create Spring Boot properties
         run: |
-          mkdir -p ./ojosama-repo/Team5_BE/src/main/resources
-          echo "${{ secrets.APPLICATION }}" > ./ojosama-repo/Team5_BE/src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-local.properties
-          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-oauth.properties
+          mkdir -p ./ojosama_repo/Team5_BE/src/main/resources
+          echo "${{ secrets.APPLICATION }}" > ./ojosama_repo/Team5_BE/src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-local.properties
+          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-oauth.properties
           
       - name: Build Spring Boot
-        working-directory: ./ojosama-repo/Team5_BE
+        working-directory: ./ojosama_repo/Team5_BE
         run: |
           chmod +x gradlew
           ./gradlew clean build --exclude-task test
@@ -55,16 +60,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      # Docker Compose 빌드 및 푸시
-      - name: Build and push Docker images
-        working-directory: ./ojosama-repo
-        run: |
-          docker-compose build
-          docker-compose push
-        env:
-          DOCKER_BUILDKIT: 1
-          COMPOSE_DOCKER_CLI_BUILD: 1
           
       # 배포 서버에 SSH로 접속하여 컨테이너 실행 (선택사항)
       - name: Deploy to server
@@ -74,6 +69,5 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd /path/to/your/project
-            docker-compose pull
-            docker-compose up -d
+            cd ojosama_repo
+            sudo docker-compose up -d
