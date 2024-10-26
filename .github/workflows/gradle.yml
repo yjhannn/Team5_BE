@@ -39,6 +39,12 @@ jobs:
           echo "${{ secrets.APPLICATION }}" > ./ojosama-repo/Team5_BE/src/main/resources/application.properties
           echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-local.properties
           echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-oauth.properties
+      
+      # 현재 디렉토리 구조 확인 (디버깅용)
+      - name: Check directory structure
+        run: |
+          ls -la ojosama-repo
+          ls -la ojosama-repo/Team5_BE
           
       - name: Build Spring Boot
         working-directory: ./ojosama-repo/Team5_BE
