@@ -36,8 +36,9 @@ jobs:
       - name: Create Spring Boot properties
         run: |
           mkdir -p ./ojosama-repo/Team5_BE/src/main/resources
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./spring-app/src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION_LOCAL_PROPERTIES }}" > ./spring-app/src/main/resources/application-local.properties
+          echo "${{ secrets.APPLICATION }}" > ./ojosama-repo/Team5_BE/src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-local.properties
+          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama-repo/Team5_BE/src/main/resources/application-oauth.properties
           
       - name: Build Spring Boot
         working-directory: ./ojosama-repo/Team5_BE
