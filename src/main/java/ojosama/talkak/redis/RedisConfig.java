@@ -2,6 +2,7 @@ package ojosama.talkak.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,17 +16,17 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableRedisRepositories
+@Slf4j
 public class RedisConfig {
-
-    private final RedisProperties redisProperties;
-
-    public RedisConfig(RedisProperties redisProperties) {
-        this.redisProperties = redisProperties;
-    }
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(redisProperties.getHost(), redisProperties.getPort());
+        String host = System.getProperty("spring.redis.host", "localhost");
+        int port = Integer.parseInt(System.getProperty("spring.redis.port", "6379"));
+
+        log.info("Connecting to Redis at " + host + ":" + port);
+
+        return new LettuceConnectionFactory(host, port);
     }
 
     @Bean

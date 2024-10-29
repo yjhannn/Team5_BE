@@ -1,13 +1,16 @@
 package ojosama.talkak.redis.service;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import ojosama.talkak.category.domain.CategoryType;
-import ojosama.talkak.reaction.repository.ReactionRepository;
+import ojosama.talkak.redis.config.RecommendTestContainerConfig;
+import ojosama.talkak.redis.config.RedisTestContainerConfig;
 import ojosama.talkak.redis.domain.EventQueue;
 import ojosama.talkak.redis.domain.Reactions;
 import ojosama.talkak.redis.domain.VideoInfo;
@@ -16,19 +19,18 @@ import ojosama.talkak.redis.repository.ReactionsRepository;
 import ojosama.talkak.redis.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
 @SpringBootTest
+@Slf4j
+@ExtendWith({RedisTestContainerConfig.class, RecommendTestContainerConfig.class})
 class RecommendationServiceTest {
-
-    @Autowired
-    private RecommendationService recommendationService;
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -45,12 +47,11 @@ class RecommendationServiceTest {
     @Autowired
     private EventQueueRepository eventQueueRepository;
 
+    @Autowired
+    private RecommendationService recommendationService;
+
     @BeforeEach
-    void setUp() {
-        Objects.requireNonNull(redisTemplate.getConnectionFactory())
-            .getConnection()
-            .serverCommands()
-            .flushAll();
+    void setUp() throws IOException {
 
         for (int i = 1; i <= CategoryType.values().length; i++) {
             for (int j = 1; j <= 10; j++) {

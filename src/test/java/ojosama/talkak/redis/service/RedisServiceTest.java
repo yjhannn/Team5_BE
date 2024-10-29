@@ -1,4 +1,4 @@
-package ojosama.talkak.redis;
+package ojosama.talkak.redis.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
+import ojosama.talkak.redis.HashConverter;
+import ojosama.talkak.redis.RedisConfig;
+import ojosama.talkak.redis.RedisService;
 import ojosama.talkak.redis.domain.EventQueue;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.innerkey.ScoresSetKey;
