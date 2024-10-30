@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/videos")
-public class VideoController {
+public class VideoController implements VideoApiController{
 
     private final VideoService videoService;
     private final YoutubeService youtubeService;
