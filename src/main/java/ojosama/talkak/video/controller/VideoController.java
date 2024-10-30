@@ -1,14 +1,17 @@
 package ojosama.talkak.video.controller;
 
+import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
+import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeApiResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
 import ojosama.talkak.video.service.AwsS3Service;
 import ojosama.talkak.video.service.VideoService;
 import ojosama.talkak.video.service.YoutubeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +37,13 @@ public class VideoController implements VideoApiController {
         this.youtubeService = youtubeService;
         this.awsS3Service = awsS3Service;
     }
+
+    @GetMapping
+    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req) {
+        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req);
+        return ResponseEntity.ok(videos);
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<VideoResponse> uploadShortsVideo(
             @RequestParam("file") MultipartFile file, VideoRequest videoRequest) throws IOException {
