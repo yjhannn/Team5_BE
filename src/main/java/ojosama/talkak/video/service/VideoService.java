@@ -57,7 +57,7 @@ public class VideoService {
 
     public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Video> videos = videoRepository.findByCategoryId(
+        Page<Video> videos = videoRepository.findByCategoryIdOrderByViewsDesc(
             req.categoryId(), pageable);
 
         if (videos.isEmpty()) {
