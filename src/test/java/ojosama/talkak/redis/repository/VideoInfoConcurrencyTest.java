@@ -1,12 +1,11 @@
 package ojosama.talkak.redis.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.time.LocalDateTime;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import lombok.extern.slf4j.Slf4j;
+import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.redis.config.RecommendTestContainerConfig;
 import ojosama.talkak.redis.config.RedisTestContainerConfig;
 import ojosama.talkak.redis.domain.VideoInfo;
@@ -26,6 +25,9 @@ class VideoInfoConcurrencyTest {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    private ReactionService reactionService;
 
     @Autowired
     private VideoInfoRepository videoInfoRepository;
@@ -48,8 +50,7 @@ class VideoInfoConcurrencyTest {
 
         for(int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
-                videoInfo.incrementViewCount();
-                videoInfoRepository.updateViewCount(categoryId, videoId, videoInfo.getViewCount());
+                reactionService.incrementViewCount(categoryId, videoId);
                 latch.countDown();
             });
         }
@@ -69,8 +70,7 @@ class VideoInfoConcurrencyTest {
 
         for(int i = 0; i < threadCount; i++) {
             executorService.execute(() -> {
-                videoInfo.incrementLikeCount();
-                videoInfoRepository.updateLikeCount(categoryId, videoId, videoInfo.getLikeCount());
+                reactionService.incrementLikeCount(categoryId, videoId);
                 latch.countDown();
             });
         }

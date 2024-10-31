@@ -5,6 +5,7 @@ import ojosama.talkak.redis.RedisService;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.innerkey.VideoHashKey;
 import ojosama.talkak.redis.key.VideoKey;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -26,18 +27,6 @@ public class VideoInfoRepository {
 
     public VideoInfo findByCategoryAndVideoId(Long categoryId, Long videoId) {
         String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
-    }
-
-    public VideoInfo updateViewCount(Long categoryId, Long videoId, Long updatedViewCount) {
-        String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        redisService.setHashValue(key, VideoHashKey.VIEW_COUNT.getKey(), updatedViewCount);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
-    }
-
-    public VideoInfo updateLikeCount(Long categoryId, Long videoId, Long updatedLikeCount) {
-        String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        redisService.setHashValue(key, VideoHashKey.LIKE_COUNT.getKey(), updatedLikeCount);
         return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
     }
 
