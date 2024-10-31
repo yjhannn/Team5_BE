@@ -34,7 +34,7 @@ public class MemberCategory {
     @JoinColumn(name = "category_id", nullable = false, insertable = false, updatable = false)
     private Category category;
 
-    public MemberCategory(Member member, Category category) {
+    private MemberCategory(Member member, Category category) {
         this.id = new MemberCategoryId(member.getId(), category.getId());
         this.member = member;
         this.category = category;
