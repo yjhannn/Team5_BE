@@ -4,6 +4,7 @@ import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
+import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeApiResponse;
@@ -39,9 +40,17 @@ public class VideoController implements VideoApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req) {
-        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req);
+    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size) {
+        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req, page, size);
         return ResponseEntity.ok(videos);
+    }
+
+    @GetMapping("/{videoId}")
+    public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable Long videoId) {
+        VideoDetailsResponse response = videoService.getVideoDetailsByVideoId(videoId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/upload")

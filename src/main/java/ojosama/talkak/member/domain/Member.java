@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import ojosama.talkak.comment.domain.Comment;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.MemberError;
+import ojosama.talkak.video.domain.Video;
 
 @Entity
 @Table(name = "member")
@@ -40,6 +41,8 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MembershipTier membership = MembershipTier.Basic;
     private Integer point = 0;
+    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Video> videos;
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
 

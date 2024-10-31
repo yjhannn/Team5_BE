@@ -7,12 +7,15 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import ojosama.talkak.comment.domain.Comment;
+import ojosama.talkak.member.domain.Member;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
@@ -23,8 +26,11 @@ public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
     private String title;
+    private String videoUrl;
     private String uniqueFileName;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -47,12 +53,12 @@ public class Video {
         this.countLikes = countLikes;
     }
 
-    public Video(String title, Long memberId, Long categoryId, String uniqueFileName) {
-        this.title = title;
-        this.memberId = memberId;
-        this.categoryId = categoryId;
-        this.uniqueFileName = uniqueFileName;
-    }
+//    public Video(String title, Long memberId, Long categoryId, String uniqueFileName) {
+//        this.title = title;
+//        this.memberId = memberId;
+//        this.categoryId = categoryId;
+//        this.uniqueFileName = uniqueFileName;
+//    }
 
     public void incrementLikes() {
         this.countLikes++;
@@ -64,5 +70,9 @@ public class Video {
 
     public void incrementViews() {
         this.views += 1;
+    }
+
+    public int commentsCount() {
+        return comments == null ? 0 : comments.size();
     }
 }

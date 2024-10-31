@@ -3,10 +3,15 @@ package ojosama.talkak.video.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import ojosama.talkak.common.exception.TalKakException;
+import ojosama.talkak.common.exception.code.MemberError;
 import ojosama.talkak.common.exception.code.VideoError;
+import ojosama.talkak.member.domain.Member;
+import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.VideoCategoryRequest;
+import ojosama.talkak.video.response.MemberInfoResponse;
+import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationAPIResponse;
@@ -15,6 +20,9 @@ import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
 import ojosama.talkak.video.util.IdExtractor;
 import ojosama.talkak.common.util.WebClientUtil;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -28,15 +36,29 @@ public class VideoService {
 
     private final WebClientUtil webClientUtil;
     private final VideoRepository videoRepository;
+    private final MemberRepository memberRepository;
 
-    public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository) {
+    public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository, MemberRepository memberRepository) {
         this.webClientUtil = webClientUtil;
         this.videoRepository = videoRepository;
+        this.memberRepository = memberRepository;
     }
 
-    public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req) {
-        List<Video> videos = videoRepository.findTop20ByCategoryIdOrderByViewsDesc(
-            req.categoryId());
+    public VideoDetailsResponse getVideoDetailsByVideoId(Long videoId) {
+        Video video = videoRepository.findById(videoId)
+            .orElseThrow(() -> TalKakException.of(VideoError.VIDEO_NOT_FOUND));
+        Member member = memberRepository.findById(video.getMember().getId())
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
+            member.getImageUrl(), member.getUsername());
+        return new VideoDetailsResponse(video.getId(), video.getVideoUrl(), memberInfoResponse, video.getCountLikes(),
+            video.commentsCount());
+    }
+
+    public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Video> videos = videoRepository.findByCategoryId(
+            req.categoryId(), pageable);
 
         if (videos.isEmpty()) {
             throw TalKakException.of(VideoError.VIDEO_NOT_FOUND);
@@ -47,7 +69,7 @@ public class VideoService {
                 video.getId(),
                 video.getThumbnail(),
                 video.getTitle(),
-                video.getMemberId(),
+                video.getMember().getId(),
                 video.getCreatedAt()
             ))
             .collect(Collectors.toList());
