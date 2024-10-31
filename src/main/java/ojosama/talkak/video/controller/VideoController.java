@@ -1,5 +1,6 @@
 package ojosama.talkak.video.controller;
 
+import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
@@ -31,12 +32,14 @@ public class VideoController implements VideoApiController {
     private final VideoService videoService;
     private final YoutubeService youtubeService;
     private final AwsS3Service awsS3Service;
+    private final ReactionService reactionService;
 
     public VideoController(VideoService videoService, YoutubeService youtubeService,
-                           AwsS3Service awsS3Service) {
+                           AwsS3Service awsS3Service, ReactionService reactionService) {
         this.videoService = videoService;
         this.youtubeService = youtubeService;
         this.awsS3Service = awsS3Service;
+        this.reactionService = reactionService;
     }
 
     @GetMapping
@@ -50,6 +53,8 @@ public class VideoController implements VideoApiController {
     @GetMapping("/{videoId}")
     public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable Long videoId) {
         VideoDetailsResponse response = videoService.getVideoDetailsByVideoId(videoId);
+        // 조회수 증가
+        reactionService.incrementViewCount(response.categoryId(), videoId);
         return ResponseEntity.ok(response);
     }
 
