@@ -26,9 +26,7 @@ public class Video {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private Long memberId;
     private String title;
     private String videoUrl;
     private String uniqueFileName;
@@ -53,26 +51,18 @@ public class Video {
         this.countLikes = countLikes;
     }
 
-//    public Video(String title, Long memberId, Long categoryId, String uniqueFileName) {
-//        this.title = title;
-//        this.memberId = memberId;
-//        this.categoryId = categoryId;
-//        this.uniqueFileName = uniqueFileName;
-//    }
+    public Video(String title, Long memberId, Long categoryId, String uniqueFileName) {
+        this.title = title;
+        this.memberId = memberId;
+        this.categoryId = categoryId;
+        this.uniqueFileName = uniqueFileName;
+    }
 
     public void incrementLikes() {
         this.countLikes++;
     }
 
-    public void decrementLikes() {
-        this.countLikes--;
-    }
-
-    public void incrementViews() {
-        this.views += 1;
-    }
-
-    public int commentsCount() {
+    public Integer commentsCount() {
         return comments == null ? 0 : comments.size();
     }
 }

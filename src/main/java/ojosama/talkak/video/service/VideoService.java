@@ -7,6 +7,8 @@ import ojosama.talkak.common.exception.code.MemberError;
 import ojosama.talkak.common.exception.code.VideoError;
 import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
+import ojosama.talkak.redis.domain.VideoInfo;
+import ojosama.talkak.redis.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.VideoCategoryRequest;
@@ -37,28 +39,31 @@ public class VideoService {
     private final WebClientUtil webClientUtil;
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
+    private final VideoInfoRepository videoInfoRepository;
 
-    public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository, MemberRepository memberRepository) {
+    public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository, MemberRepository memberRepository,
+        VideoInfoRepository videoInfoRepository) {
         this.webClientUtil = webClientUtil;
         this.videoRepository = videoRepository;
         this.memberRepository = memberRepository;
+        this.videoInfoRepository = videoInfoRepository;
     }
 
     public VideoDetailsResponse getVideoDetailsByVideoId(Long videoId) {
         Video video = videoRepository.findById(videoId)
             .orElseThrow(() -> TalKakException.of(VideoError.VIDEO_NOT_FOUND));
-        Member member = memberRepository.findById(video.getMember().getId())
+        Member member = memberRepository.findById(video.getMemberId())
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(), videoId);
         MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
             member.getImageUrl(), member.getUsername());
-        return new VideoDetailsResponse(video.getId(), video.getVideoUrl(), memberInfoResponse, video.getCountLikes(),
+        return new VideoDetailsResponse(video.getId(), video.getCategoryId(), video.getVideoUrl(), memberInfoResponse, videoInfo.getLikeCount(), videoInfo.getViewCount(),
             video.commentsCount());
     }
 
     public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Video> videos = videoRepository.findByCategoryIdOrderByViewsDesc(
-            req.categoryId(), pageable);
+        Page<Video> videos = videoRepository.findByCategoryId(req.categoryId(), pageable);
 
         if (videos.isEmpty()) {
             throw TalKakException.of(VideoError.VIDEO_NOT_FOUND);
@@ -69,7 +74,7 @@ public class VideoService {
                 video.getId(),
                 video.getThumbnail(),
                 video.getTitle(),
-                video.getMember().getId(),
+                video.getId(),
                 video.getCreatedAt()
             ))
             .collect(Collectors.toList());

@@ -41,8 +41,6 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MembershipTier membership = MembershipTier.Basic;
     private Integer point = 0;
-    @OneToMany(mappedBy = "video", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Video> videos;
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
 
