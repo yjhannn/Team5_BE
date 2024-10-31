@@ -1,6 +1,7 @@
 package ojosama.talkak.redis.repository;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -56,9 +57,9 @@ class VideoInfoConcurrencyTest {
         }
 
         latch.await();
-        VideoInfo updatedViewInfo = videoInfoRepository.findByCategoryAndVideoId(categoryId,
+        Optional<VideoInfo> updatedViewInfo = videoInfoRepository.findByCategoryAndVideoId(categoryId,
             videoId);
-        Assertions.assertThat(updatedViewInfo.getViewCount()).isEqualTo(Long.valueOf(threadCount));
+        Assertions.assertThat(updatedViewInfo.get().getViewCount()).isEqualTo(Long.valueOf(threadCount));
     }
 
     @DisplayName("좋아요수 동시성 테스트")
@@ -76,9 +77,9 @@ class VideoInfoConcurrencyTest {
         }
 
         latch.await();
-        VideoInfo updatedViewInfo = videoInfoRepository.findByCategoryAndVideoId(categoryId,
+        Optional<VideoInfo> updatedViewInfo = videoInfoRepository.findByCategoryAndVideoId(categoryId,
             videoId);
-        Assertions.assertThat(updatedViewInfo.getLikeCount()).isEqualTo(Long.valueOf(threadCount));
+        Assertions.assertThat(updatedViewInfo.get().getLikeCount()).isEqualTo(Long.valueOf(threadCount));
     }
 
 }
