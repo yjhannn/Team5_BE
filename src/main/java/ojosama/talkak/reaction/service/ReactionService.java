@@ -18,20 +18,14 @@ import org.springframework.stereotype.Service;
 public class ReactionService {
 
     private final ReactionsRepository reactionsRepository;
-    private final MemberRepository memberRepository;
-    private final VideoRepository videoRepository;
     private final RedisService redisService;
     private final RedisTemplate<String, Object> redisTemplate;
     private final HashConverter hashConverter;
 
-    public ReactionService(ReactionsRepository reactionsRepository,
-        MemberRepository memberRepository,
-        VideoRepository videoRepository, RedisService redisService,
+    public ReactionService(ReactionsRepository reactionsRepository, RedisService redisService,
         RedisTemplate<String, Object> redisTemplate,
         HashConverter hashConverter) {
         this.reactionsRepository = reactionsRepository;
-        this.memberRepository = memberRepository;
-        this.videoRepository = videoRepository;
         this.redisService = redisService;
         this.redisTemplate = redisTemplate;
         this.hashConverter = hashConverter;
