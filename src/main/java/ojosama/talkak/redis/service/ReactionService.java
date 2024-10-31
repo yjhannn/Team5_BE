@@ -1,4 +1,4 @@
-package ojosama.talkak.reaction.service;
+package ojosama.talkak.redis.service;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.ReactionError;
 import ojosama.talkak.member.domain.Member;

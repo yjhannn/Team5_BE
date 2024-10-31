@@ -61,6 +61,9 @@ public class Video {
     public void incrementLikes() {
         this.countLikes++;
     }
+    public void decrementLikes() {
+        this.countLikes--;
+    }
 
     public Integer commentsCount() {
         return comments == null ? 0 : comments.size();
