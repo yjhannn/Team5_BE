@@ -1,6 +1,8 @@
 package ojosama.talkak.redis.repository;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
 import ojosama.talkak.redis.domain.UserMeta;
@@ -25,9 +27,15 @@ public class UserMetaRepository {
         return hashConverter.FromMap(redisService.getHashOps(key), UserMeta.class);
     }
 
-    public UserMeta findByMemberId(Long memberId) {
+    public Optional<UserMeta> findByMemberId(Long memberId) {
         String key = UserMetaKey.USER_META.generateKey(memberId);
-        return hashConverter.FromMap(redisService.getHashOps(key), UserMeta.class);
+        Map<String, Object> entries = redisService.getHashOps(key);
+
+        if(entries.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(hashConverter.FromMap(entries, UserMeta.class));
     }
 
     public UserMeta updateLastUpdatedAt(Long memberId, LocalDateTime dateTime) {

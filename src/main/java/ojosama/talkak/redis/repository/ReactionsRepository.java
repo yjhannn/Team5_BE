@@ -1,5 +1,7 @@
 package ojosama.talkak.redis.repository;
 
+import java.util.Map;
+import java.util.Optional;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
 import ojosama.talkak.redis.domain.Reactions;
@@ -24,16 +26,17 @@ public class ReactionsRepository {
         return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
     }
 
-    public Reactions findByMemberIdAndVideoId(Long memberId, Long videoId) {
+    public Optional<Reactions> findByMemberIdAndVideoId(Long memberId, Long videoId) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
+        Map<String, Object> entries = redisService.getHashOps(key);
+
+        if (entries.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(hashConverter.FromMap(entries, Reactions.class));
     }
 
-    public Reactions updateLiked(Long memberId, Long videoId, Integer liked) {
-        String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        redisService.setHashValue(key, ReactionHashKey.LIKED.getKey(), liked);
-        return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
-    }
 
     public void delete(Long memberId, Long videoId) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);

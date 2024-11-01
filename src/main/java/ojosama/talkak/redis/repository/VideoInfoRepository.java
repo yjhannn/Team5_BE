@@ -1,10 +1,13 @@
 package ojosama.talkak.redis.repository;
 
+import java.util.Map;
+import java.util.Optional;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.innerkey.VideoHashKey;
 import ojosama.talkak.redis.key.VideoKey;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -24,11 +27,16 @@ public class VideoInfoRepository {
         return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
     }
 
-    public VideoInfo findByCategoryAndVideoId(Long categoryId, Long videoId) {
+    public Optional<VideoInfo> findByCategoryAndVideoId(Long categoryId, Long videoId) {
         String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
-    }
+        Map<String, Object> entries = redisService.getHashOps(key);
 
+        if (entries.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(hashConverter.FromMap(entries, VideoInfo.class));
+    }
 
     public void delete(Long categoryId, Long videoId) {
         String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
