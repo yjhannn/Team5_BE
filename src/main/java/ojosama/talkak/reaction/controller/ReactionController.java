@@ -1,6 +1,8 @@
 package ojosama.talkak.reaction.controller;
 
-import ojosama.talkak.reaction.service.ReactionService;
+
+import ojosama.talkak.redis.service.ReactionService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;

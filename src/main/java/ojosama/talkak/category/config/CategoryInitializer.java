@@ -5,9 +5,11 @@ import java.util.Arrays;
 import ojosama.talkak.category.domain.Category;
 import ojosama.talkak.category.domain.CategoryType;
 import ojosama.talkak.category.repository.CategoryRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Profile("local")
 @Component
 public class CategoryInitializer {
 

@@ -40,10 +40,10 @@ public class MemberService {
     public MyPageInfoResponse getMemberInfo(Long memberId) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
-        List<Category> categories = memberCategoryRepository.findAllCategoriesByMember(
+        List<Category> favoriteCategories = memberCategoryRepository.findAllCategoriesByMember(
             memberId);
 
-        return MyPageInfoResponse.of(member, categories);
+        return MyPageInfoResponse.of(member, favoriteCategories);
     }
 
     @Transactional
@@ -97,7 +97,7 @@ public class MemberService {
         List<MemberCategory> newMemberCategories = categoryRepository.findAllByCategoryIds(
                 newCategoryIds)
             .stream()
-            .map(c -> memberCategoryRepository.save(new MemberCategory(member, c)))
+            .map(c -> memberCategoryRepository.save(MemberCategory.of(member, c)))
             .toList();
         memberCategories.addAll(newMemberCategories);
     }
