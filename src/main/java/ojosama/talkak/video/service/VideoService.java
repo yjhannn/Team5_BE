@@ -61,8 +61,7 @@ public class VideoService {
             video.commentsCount());
     }
 
-    public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, Pageable pageable) {
         Page<Video> videos = videoRepository.findByCategoryId(req.categoryId(), pageable);
 
         return videos.stream()
