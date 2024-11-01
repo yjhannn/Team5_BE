@@ -1,10 +1,13 @@
 package ojosama.talkak.redis.repository;
 
+import java.util.Map;
+import java.util.Optional;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.innerkey.VideoHashKey;
 import ojosama.talkak.redis.key.VideoKey;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -24,21 +27,15 @@ public class VideoInfoRepository {
         return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
     }
 
-    public VideoInfo findByCategoryAndVideoId(Long categoryId, Long videoId) {
+    public Optional<VideoInfo> findByCategoryAndVideoId(Long categoryId, Long videoId) {
         String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
-    }
+        Map<String, Object> entries = redisService.getHashOps(key);
 
-    public VideoInfo updateViewCount(Long categoryId, Long videoId, Long updatedViewCount) {
-        String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        redisService.setHashValue(key, VideoHashKey.VIEW_COUNT.getKey(), updatedViewCount);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
-    }
+        if (entries.isEmpty()) {
+            return Optional.empty();
+        }
 
-    public VideoInfo updateLikeCount(Long categoryId, Long videoId, Long updatedLikeCount) {
-        String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        redisService.setHashValue(key, VideoHashKey.LIKE_COUNT.getKey(), updatedLikeCount);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
+        return Optional.of(hashConverter.FromMap(entries, VideoInfo.class));
     }
 
     public void delete(Long categoryId, Long videoId) {
