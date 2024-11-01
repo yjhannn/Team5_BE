@@ -27,12 +27,4 @@ public class VideoInfo {
             viewCount, likeCount);
     }
 
-    public void incrementViewCount() {
-        this.viewCount++;
-    }
-
-    public void incrementLikeCount() {
-        this.likeCount++;
-    }
-
 }

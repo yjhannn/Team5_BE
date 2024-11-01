@@ -20,6 +20,7 @@ public class Video extends BaseEntity {
 
     private Long memberId;
     private String title;
+    private String videoUrl;
     private String uniqueFileName;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -52,12 +53,11 @@ public class Video extends BaseEntity {
     public void incrementLikes() {
         this.countLikes++;
     }
-
     public void decrementLikes() {
         this.countLikes--;
     }
 
-    public void incrementViews() {
-        this.views += 1;
+    public Integer commentsCount() {
+        return comments == null ? 0 : comments.size();
     }
 }

@@ -1,8 +1,18 @@
 package ojosama.talkak.video.controller;
 
+import static org.hibernate.query.sqm.tree.SqmNode.log;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import ojosama.talkak.redis.service.ReactionService;
+import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
+import ojosama.talkak.video.response.VideoDetailsResponse;
+import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeApiResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
@@ -10,15 +20,14 @@ import ojosama.talkak.video.service.AwsS3Service;
 import ojosama.talkak.video.service.VideoService;
 import ojosama.talkak.video.service.YoutubeService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
-import static org.hibernate.query.sqm.tree.SqmNode.log;
 
 @RestController
 @RequestMapping("/api/videos")
@@ -27,12 +36,30 @@ public class VideoController implements VideoApiController {
     private final VideoService videoService;
     private final YoutubeService youtubeService;
     private final AwsS3Service awsS3Service;
+    private final ReactionService reactionService;
 
     public VideoController(VideoService videoService, YoutubeService youtubeService,
-                           AwsS3Service awsS3Service) {
+                           AwsS3Service awsS3Service, ReactionService reactionService) {
         this.videoService = videoService;
         this.youtubeService = youtubeService;
         this.awsS3Service = awsS3Service;
+        this.reactionService = reactionService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size) {
+        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req, page, size);
+        return ResponseEntity.ok(videos);
+    }
+
+    @GetMapping("/{videoId}")
+    public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable Long videoId) {
+        VideoDetailsResponse response = videoService.getVideoDetailsByVideoId(videoId);
+        // 조회수 증가
+        reactionService.incrementViewCount(response.categoryId(), videoId);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/upload")
@@ -80,4 +107,5 @@ public class VideoController implements VideoApiController {
 
         return ResponseEntity.ok(response);
     }
+
 }

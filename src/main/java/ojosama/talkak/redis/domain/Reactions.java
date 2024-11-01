@@ -21,7 +21,7 @@ public class Reactions {
         return new Reactions(watched, liked);
     }
 
-    public void toggleLike() {
+    public void updateLike() {
         this.liked = Math.abs(liked - 1);
     }
 
