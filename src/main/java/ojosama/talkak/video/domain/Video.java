@@ -4,27 +4,23 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import ojosama.talkak.comment.domain.Comment;
+import ojosama.talkak.common.entity.BaseEntity;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "video")
 @Getter
-public class Video {
+public class Video extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
     private Long memberId;
     private String title;
+    private String videoUrl;
     private String uniqueFileName;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -57,12 +53,11 @@ public class Video {
     public void incrementLikes() {
         this.countLikes++;
     }
-
     public void decrementLikes() {
         this.countLikes--;
     }
 
-    public void incrementViews() {
-        this.views += 1;
+    public Integer commentsCount() {
+        return comments == null ? 0 : comments.size();
     }
 }
