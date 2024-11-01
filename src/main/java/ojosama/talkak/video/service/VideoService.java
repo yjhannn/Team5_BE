@@ -57,8 +57,7 @@ public class VideoService {
         VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(), videoId);
         MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
             member.getImageUrl(), member.getUsername());
-        return new VideoDetailsResponse(video.getId(), video.getCategoryId(), video.getVideoUrl(), memberInfoResponse, videoInfo.getLikeCount(), videoInfo.getViewCount(),
-            video.commentsCount());
+        return new VideoDetailsResponse(video, videoInfo, member);
     }
 
     public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, Pageable pageable) {
