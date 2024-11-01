@@ -50,13 +50,6 @@ public class Video extends BaseEntity {
         this.uniqueFileName = uniqueFileName;
     }
 
-    public void incrementLikes() {
-        this.countLikes++;
-    }
-    public void decrementLikes() {
-        this.countLikes--;
-    }
-
     public Integer commentsCount() {
         return comments == null ? 0 : comments.size();
     }
