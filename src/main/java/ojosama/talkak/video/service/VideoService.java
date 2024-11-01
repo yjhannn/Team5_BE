@@ -51,7 +51,7 @@ public class VideoService {
 
     public VideoDetailsResponse getVideoDetailsByVideoId(Long videoId) {
         Video video = videoRepository.findById(videoId)
-            .orElseThrow(() -> TalKakException.of(VideoError.VIDEO_NOT_FOUND));
+            .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
         Member member = memberRepository.findById(video.getMemberId())
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
         VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(), videoId);
@@ -64,10 +64,6 @@ public class VideoService {
     public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Video> videos = videoRepository.findByCategoryId(req.categoryId(), pageable);
-
-        if (videos.isEmpty()) {
-            throw TalKakException.of(VideoError.VIDEO_NOT_FOUND);
-        }
 
         return videos.stream()
             .map(video -> new VideoInfoResponse(
