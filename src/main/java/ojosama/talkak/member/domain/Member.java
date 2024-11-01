@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import ojosama.talkak.comment.domain.Comment;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.MemberError;
+import ojosama.talkak.video.domain.Video;
 
 @Entity
 @Table(name = "member")
