@@ -39,10 +39,6 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public Member(Long id, String username) {
-        this.id = id;
-        this.username = username;
-    }
 
     private Member(String username, String imageUrl, String email) {
         this.username = username;

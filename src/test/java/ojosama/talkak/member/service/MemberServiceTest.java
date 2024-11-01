@@ -188,7 +188,7 @@ class MemberServiceTest {
     }
 
     private static Member demoMember() {
-        return new Member(null, "철수 김", "https://",
+        return new Member("철수 김", "https://",
             "abc123@a.com", false, Age.TWENTY, MembershipTier.Basic, 0, new ArrayList<>());
     }
 
