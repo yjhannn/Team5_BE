@@ -32,12 +32,6 @@ public class Comment extends BaseEntity {
         this.content = content;
     }
 
-    public Comment(Long id, Member member, Video video, String content) {
-        this.id = id;
-        this.member = member;
-        this.video = video;
-        this.content = content;
-    }
 
     public void updateContent(String newContent) {
         this.content = newContent;
