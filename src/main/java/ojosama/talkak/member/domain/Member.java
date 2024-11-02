@@ -59,7 +59,9 @@ public class Member extends BaseEntity {
             throw TalKakException.of(MemberError.ERROR_UPDATE_MEMBER_INFO);
         }
 
-        this.gender = !gender.equals("남자");
+        if(this.gender != gender.equals("남자")) {
+            this.gender = !this.gender;
+        }
         this.age = newAge;
     }
 

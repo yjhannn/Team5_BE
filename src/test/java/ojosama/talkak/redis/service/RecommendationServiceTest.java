@@ -55,7 +55,7 @@ class RecommendationServiceTest {
 
         for (int i = 1; i <= CategoryType.values().length; i++) {
             for (int j = 1; j <= 10; j++) {
-                videoRepository.save(new Video((long) j, "title", 0L));
+                videoRepository.save(new Video("title", 0L));
                 videoInfoRepository.save((long) i, (long) j,
                     VideoInfo.of(LocalDateTime.now(), 0L, 0L));
             }

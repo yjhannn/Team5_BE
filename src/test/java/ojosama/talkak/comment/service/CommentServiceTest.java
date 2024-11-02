@@ -45,9 +45,9 @@ public class CommentServiceTest {
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        member = new Member(1L, "username");
-        video = new Video(1L, "video title", 0L);
-        comment = new Comment(1L, member, video, "This is a comment.");
+        member = Member.of("username", "imageurl", "email");
+        video = new Video("video title", 0L);
+        comment = new Comment(member, video, "This is a comment.");
     }
 
     @Test
@@ -165,7 +165,7 @@ public class CommentServiceTest {
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         when(memberRepository.findById(memberId)).thenReturn(
-            Optional.of(new Member(2L, "anotherUser")));
+            Optional.of(Member.of("anotherUser", "imageurl", "email")));
 
         // When & Then
         TalKakException exception = assertThrows(TalKakException.class, () -> {
@@ -213,7 +213,7 @@ public class CommentServiceTest {
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         when(memberRepository.findById(memberId)).thenReturn(
-            Optional.of(new Member(2L, "anotherUser")));
+            Optional.of(Member.of( "anotherUser", "imageurl", "email")));
 
         // When & Then
         TalKakException exception = assertThrows(TalKakException.class, () -> {

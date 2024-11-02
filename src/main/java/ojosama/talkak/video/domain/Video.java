@@ -37,8 +37,7 @@ public class Video extends BaseEntity {
 
     }
 
-    public Video(Long id, String title, Long countLikes) {
-        this.id = id;
+    public Video(String title, Long countLikes) {
         this.title = title;
         this.countLikes = countLikes;
     }
