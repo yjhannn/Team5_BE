@@ -37,8 +37,7 @@ public class Video extends BaseEntity {
 
     }
 
-    public Video(Long id, String title, Long countLikes) {
-        this.id = id;
+    public Video(String title, Long countLikes) {
         this.title = title;
         this.countLikes = countLikes;
     }
@@ -48,13 +47,6 @@ public class Video extends BaseEntity {
         this.memberId = memberId;
         this.categoryId = categoryId;
         this.uniqueFileName = uniqueFileName;
-    }
-
-    public void incrementLikes() {
-        this.countLikes++;
-    }
-    public void decrementLikes() {
-        this.countLikes--;
     }
 
     public Integer commentsCount() {

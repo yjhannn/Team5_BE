@@ -55,8 +55,7 @@ class MemberServiceTest {
 
     @BeforeEach
     void before() {
-        member = demoMember();
-        memberRepository.save(member);
+        member = memberRepository.save(demoMember());
 
         categories = categoryRepository.findAll();
         List<MemberCategory> memberCategories = categories.stream()
@@ -188,8 +187,8 @@ class MemberServiceTest {
     }
 
     private static Member demoMember() {
-        return new Member(null, "철수 김", "https://",
-            "abc123@a.com", false, Age.TWENTY, MembershipTier.Basic, 0, new ArrayList<>());
+        return new Member("철수 김", "https://",
+            "abc123@a.com", true, Age.TWENTY, MembershipTier.Basic, 0, new ArrayList<>());
     }
 
     List<Long> demoCategoryIds(List<String> categoryNames) {

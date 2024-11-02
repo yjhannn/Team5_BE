@@ -4,8 +4,7 @@ import java.util.Map;
 import java.util.Optional;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
-import ojosama.talkak.redis.domain.Reactions;
-import ojosama.talkak.redis.innerkey.ReactionHashKey;
+import ojosama.talkak.redis.domain.Reaction;
 import ojosama.talkak.redis.key.ReactionKey;
 import org.springframework.stereotype.Repository;
 
@@ -20,13 +19,13 @@ public class ReactionsRepository {
         this.hashConverter = hashConverter;
     }
 
-    public Reactions save(Long memberId, Long videoId, Reactions reactions) {
+    public Reaction save(Long memberId, Long videoId, Reaction reaction) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        redisService.setHashOps(key, hashConverter.toMap(reactions));
-        return hashConverter.FromMap(redisService.getHashOps(key), Reactions.class);
+        redisService.setHashOps(key, hashConverter.toMap(reaction));
+        return hashConverter.FromMap(redisService.getHashOps(key), Reaction.class);
     }
 
-    public Optional<Reactions> findByMemberIdAndVideoId(Long memberId, Long videoId) {
+    public Optional<Reaction> findByMemberIdAndVideoId(Long memberId, Long videoId) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
         Map<String, Object> entries = redisService.getHashOps(key);
 
@@ -34,7 +33,7 @@ public class ReactionsRepository {
             return Optional.empty();
         }
 
-        return Optional.of(hashConverter.FromMap(entries, Reactions.class));
+        return Optional.of(hashConverter.FromMap(entries, Reaction.class));
     }
 
 

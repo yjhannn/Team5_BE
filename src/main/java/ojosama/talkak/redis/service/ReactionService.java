@@ -1,15 +1,13 @@
 package ojosama.talkak.redis.service;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.ReactionError;
-import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.redis.HashConverter;
 import ojosama.talkak.redis.RedisService;
-import ojosama.talkak.redis.domain.Reactions;
+import ojosama.talkak.redis.domain.Reaction;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.innerkey.VideoHashKey;
 import ojosama.talkak.redis.key.VideoKey;
 import ojosama.talkak.redis.repository.ReactionsRepository;
-import ojosama.talkak.video.repository.VideoRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -31,18 +29,18 @@ public class ReactionService {
     }
 
     // 영상을 시청함과 동시에 Reactions 생성
-    public Reactions createReactions(Long memberId, Long videoId) {
-        return reactionsRepository.save(memberId, videoId, Reactions.createReaction());
+    public Reaction createReaction(Long memberId, Long videoId) {
+        return reactionsRepository.save(memberId, videoId, Reaction.createReaction());
     }
 
     public void toggleLike(Long memberId, Long videoId) {
         reactionsRepository.findByMemberIdAndVideoId(memberId, videoId)
-            .ifPresentOrElse(reactions -> {
-                    reactions.updateLike();
-                    reactionsRepository.save(memberId, videoId, reactions);
+            .ifPresentOrElse(reaction -> {
+                    reaction.updateLike();
+                    reactionsRepository.save(memberId, videoId, reaction);
                 }, ()
                     -> {
-                    createReactions(memberId, videoId);
+                    createReaction(memberId, videoId);
                     throw TalKakException.of(ReactionError.FAILED_PROCESS_REQUEST);
                 }
             );
