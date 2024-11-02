@@ -1,9 +1,11 @@
 package ojosama.talkak.video.response;
 
+import lombok.Getter;
 import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.video.domain.Video;
 
+@Getter
 public class VideoDetailsResponse {
     private Long id;
     private Long categoryId;
@@ -29,4 +31,5 @@ public class VideoDetailsResponse {
             member.getUsername()
         );
     }
+
 }

@@ -60,8 +60,6 @@ public class VideoController implements VideoApiController {
     @GetMapping("/{videoId}")
     public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable Long videoId) {
         VideoDetailsResponse response = videoService.getVideoDetailsByVideoId(videoId);
-        // 조회수 증가
-        reactionService.incrementViewCount(response.categoryId(), videoId);
         return ResponseEntity.ok(response);
     }
 
