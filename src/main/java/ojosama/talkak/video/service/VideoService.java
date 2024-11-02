@@ -16,7 +16,6 @@ import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.response.MemberInfoResponse;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
-import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationAPIResponse;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
 import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
@@ -24,7 +23,6 @@ import ojosama.talkak.video.util.IdExtractor;
 import ojosama.talkak.common.util.WebClientUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -63,7 +61,7 @@ public class VideoService {
         MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
             member.getImageUrl(), member.getUsername());
 
-        reactionService.createReactions(member.getId(), videoId);
+        reactionService.createReaction(member.getId(), videoId);
         // 조회수 증가
         reactionService.incrementViewCount(video.getCategoryId(), videoId);
         return new VideoDetailsResponse(video, videoInfo, member);

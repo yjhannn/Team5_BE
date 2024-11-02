@@ -12,7 +12,7 @@ import ojosama.talkak.category.domain.CategoryType;
 import ojosama.talkak.redis.config.RecommendTestContainerConfig;
 import ojosama.talkak.redis.config.RedisTestContainerConfig;
 import ojosama.talkak.redis.domain.EventQueue;
-import ojosama.talkak.redis.domain.Reactions;
+import ojosama.talkak.redis.domain.Reaction;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.repository.EventQueueRepository;
 import ojosama.talkak.redis.repository.ReactionsRepository;
@@ -83,8 +83,8 @@ class RecommendationServiceTest {
         Long categoryId = 1L;
         Long memberId = 1L;
         TimeUnit.SECONDS.sleep(10);
-        reactionsRepository.save(memberId, 1L, Reactions.of(1, 1));
-        reactionsRepository.save(memberId, 4L, Reactions.of(1, 1));
+        reactionsRepository.save(memberId, 1L, Reaction.of(1, 1));
+        reactionsRepository.save(memberId, 4L, Reaction.of(1, 1));
         eventQueueRepository.save(
             EventQueue.of(memberId, categoryId, LocalDateTime.of(2024, 1, 1, 12, 0, 0)));
         List<Video> recommendedVideos = recommendationService.getRecommendedVideos(memberId,
