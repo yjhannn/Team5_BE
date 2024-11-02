@@ -9,6 +9,7 @@ import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.repository.VideoInfoRepository;
+import ojosama.talkak.redis.service.ReactionService;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.VideoCategoryRequest;
@@ -40,34 +41,36 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
     private final VideoInfoRepository videoInfoRepository;
+    private final ReactionService reactionService;
 
     public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository, MemberRepository memberRepository,
-        VideoInfoRepository videoInfoRepository) {
+        VideoInfoRepository videoInfoRepository, ReactionService reactionService) {
         this.webClientUtil = webClientUtil;
         this.videoRepository = videoRepository;
         this.memberRepository = memberRepository;
         this.videoInfoRepository = videoInfoRepository;
+        this.reactionService = reactionService;
     }
 
     public VideoDetailsResponse getVideoDetailsByVideoId(Long videoId) {
         Video video = videoRepository.findById(videoId)
-            .orElseThrow(() -> TalKakException.of(VideoError.VIDEO_NOT_FOUND));
+            .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
         Member member = memberRepository.findById(video.getMemberId())
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
-        VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(), videoId);
+        VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(), videoId)
+            .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
+
         MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
             member.getImageUrl(), member.getUsername());
-        return new VideoDetailsResponse(video.getId(), video.getCategoryId(), video.getVideoUrl(), memberInfoResponse, videoInfo.getLikeCount(), videoInfo.getViewCount(),
-            video.commentsCount());
+
+        reactionService.createReactions(member.getId(), videoId);
+        // 조회수 증가
+        reactionService.incrementViewCount(video.getCategoryId(), videoId);
+        return new VideoDetailsResponse(video, videoInfo, member);
     }
 
-    public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<VideoInfoResponse> getVideoByCategory(VideoCategoryRequest req, Pageable pageable) {
         Page<Video> videos = videoRepository.findByCategoryId(req.categoryId(), pageable);
-
-        if (videos.isEmpty()) {
-            throw TalKakException.of(VideoError.VIDEO_NOT_FOUND);
-        }
 
         return videos.stream()
             .map(video -> new VideoInfoResponse(

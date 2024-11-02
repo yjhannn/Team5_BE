@@ -19,6 +19,8 @@ import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
 import ojosama.talkak.video.service.AwsS3Service;
 import ojosama.talkak.video.service.VideoService;
 import ojosama.talkak.video.service.YoutubeService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,15 +52,14 @@ public class VideoController implements VideoApiController {
     public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int size) {
-        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req, page, size);
+        Pageable pageable = PageRequest.of(page, size);
+        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req, pageable);
         return ResponseEntity.ok(videos);
     }
 
     @GetMapping("/{videoId}")
     public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable Long videoId) {
         VideoDetailsResponse response = videoService.getVideoDetailsByVideoId(videoId);
-        // 조회수 증가
-        reactionService.incrementViewCount(response.categoryId(), videoId);
         return ResponseEntity.ok(response);
     }
 
