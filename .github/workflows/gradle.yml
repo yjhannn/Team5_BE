@@ -27,8 +27,30 @@ jobs:
       - name: Sync Team5_BE with Master
         working-directory: ./ojosama_repo/Team5_BE
         run: |
-          git fetch origin Master
-          git reset --hard origin/Master
+          echo "Current git status:"
+          git status
+          
+          echo "\nCurrent branch and commit:"
+          git branch -v
+          
+          echo "\nFetching all changes..."
+          git fetch --all --prune
+          
+          echo "\nChecking remote branches:"
+          git branch -r
+          
+          echo "\nChecking out and pulling Master..."
+          git checkout Master
+          git pull origin Master
+          
+          echo "\nFinal git status:"
+          git status
+          
+          echo "\nLatest commits:"
+          git log --oneline -n 5
+          
+          echo "\nFinal directory listing:"
+          ls -la
           
       # 파이썬 프로젝트 체크아웃
       - name: Checkout Python project
