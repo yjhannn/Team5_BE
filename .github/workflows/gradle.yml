@@ -111,29 +111,46 @@ jobs:
             # 컨테이너 중지
             sudo docker-compose down
             
+            # docker-compose.yml 백업
+            cp docker-compose.yml docker-compose.yml.backup
+            
             # Spring Boot 프로젝트 업데이트
             if [ -d "Team5_BE" ]; then
               echo "Updating Spring Boot project..."
               cd Team5_BE
               git fetch origin
               git reset --hard origin/Master
-              cd ..
             else
               echo "Cloning Spring Boot project..."
               git clone -b Master https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
+              cd Team5_BE
             fi
+
+            # Spring Boot 프로젝트 빌드
+            echo "Building Spring Boot project..."
+            chmod +x ./gradlew
+            ./gradlew clean build --exclude-task test
+            
+            # 빌드 결과 확인
+            echo "Build output:"
+            ls -la build/libs/
+            
+            cd ..
             
             # Python 프로젝트 업데이트
             if [ -d "recommend-algorithms" ]; then
               echo "Updating Python project..."
               cd recommend-algorithms
               git fetch origin
-              git reset --hard origin/main
+              git reset --hard origin/master
               cd ..
             else
               echo "Cloning Python project..."
-              git clone -b main https://oauth2:${{ secrets.RECOMMEND_ALGORITHMS_PAT }}@github.com/anaconda77/recommend-algorithms.git
+              git clone -b master https://oauth2:${{ secrets.RECOMMEND_ALGORITHMS_PAT }}@github.com/anaconda77/recommend-algorithms.git
             fi
+            
+            # docker-compose.yml 복원
+            mv docker-compose.yml.backup docker-compose.yml
             
             # 프로젝트 상태 확인
             echo "Current directory structure:"
@@ -144,6 +161,12 @@ jobs:
             
             echo "Python project status:"
             cd recommend-algorithms && git log -1 --pretty=format:"%h - %an, %ar : %s" && cd ..
+            
+            # application.properties 파일 생성 (필요한 경우)
+            mkdir -p Team5_BE/src/main/resources
+            echo "${{ secrets.APPLICATION }}" > Team5_BE/src/main/resources/application.properties
+            echo "${{ secrets.APPLICATION_LOCAL }}" > Team5_BE/src/main/resources/application-local.properties
+            echo "${{ secrets.APPLICATION_OAUTH }}" > Team5_BE/src/main/resources/application-oauth.properties
             
             # 컨테이너 재시작
             sudo docker-compose up -d --force-recreate
