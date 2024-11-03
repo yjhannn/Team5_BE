@@ -135,8 +135,8 @@ jobs:
             
             # 빌드 결과 확인
             echo "Build output:"
+            rm -f build/libs/*-plain.jar
             ls -la build/libs/
-            
             cd ..
             
             # Python 프로젝트 업데이트
