@@ -114,19 +114,20 @@ jobs:
             rm -rf Team5_BE
             rm -rf recommend-algorithms
 
-      # 프로젝트 파일 전송
+      # 프로젝트 파일 전송 (디버그 모드 활성화)
       - name: Transfer project files
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "Team5_BE/,recommend-algorithms/"
-          target: "~/ojosama_repo/"
-          strip_components: 0
+          source: "./Team5_BE,./recommend-algorithms"
+          target: "~/ojosama_repo"
+          strip_components: 1
+          debug: true  # 디버그 모드 활성화
 
-      # 서버에서 컨테이너 재시작
-      - name: Restart containers
+      # 서버에서 파일 수신 확인 및 컨테이너 재시작
+      - name: Verify and restart
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
@@ -134,12 +135,18 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd ~/ojosama_repo
-            sudo docker-compose up -d --force-recreate
-            
-            # 상태 확인
-            echo "Current directory structure:"
+            echo "Server directory contents:"
             ls -la
-            echo "\nContainer status:"
-            sudo docker-compose ps
-            echo "\nContainer logs:"
-            sudo docker-compose logs --tail=20
+            echo "\nTeam5_BE contents:"
+            ls -la Team5_BE || echo "Team5_BE not found"
+            echo "\nrecommend-algorithms contents:"
+            ls -la recommend-algorithms || echo "recommend-algorithms not found"
+            
+            if [ -d "Team5_BE" ] && [ -d "recommend-algorithms" ]; then
+              echo "Projects transferred successfully"
+              sudo docker-compose up -d --force-recreate
+              sudo docker-compose ps
+            else
+              echo "Project transfer failed"
+              exit 1
+            fi
