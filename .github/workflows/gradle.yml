@@ -107,4 +107,17 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd ojosama_repo
-            sudo docker-compose up -d
+            # 기존 컨테이너 중지 및 제거
+            sudo docker-compose down
+            # 이전 이미지 제거
+            sudo docker-compose rm -f
+            # 이미지 강제 재빌드
+            sudo docker-compose pull
+            sudo docker-compose build --no-cache
+            # 컨테이너 재시작
+            sudo docker-compose up -d --force-recreate
+            # 사용하지 않는 이미지 정리
+            sudo docker image prune -f
+            # 상태 확인
+            sudo docker-compose ps
+            sudo docker-compose logs --tail=50
