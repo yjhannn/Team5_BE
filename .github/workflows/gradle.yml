@@ -98,7 +98,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      # 배포 서버에 SSH로 접속하여 컨테이너 실행 (선택사항)
+      # EC2 서버에 프로젝트 전송 및 배포
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
@@ -106,18 +106,40 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ojosama_repo
-            # 기존 컨테이너 중지 및 제거
+            # 기존 컨테이너 중지
+            cd ~/ojosama_repo
             sudo docker-compose down
-            # 이전 이미지 제거
-            sudo docker-compose rm -f
-            # 이미지 강제 재빌드
-            sudo docker-compose pull
-            sudo docker-compose build --no-cache
-            # 컨테이너 재시작
+            
+            # 기존 프로젝트 디렉토리 정리
+            rm -rf Team5_BE
+            rm -rf recommend-algorithms
+
+      # 프로젝트 파일 전송
+      - name: Transfer project files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: "Team5_BE/,recommend-algorithms/"
+          target: "~/ojosama_repo/"
+          strip_components: 0
+
+      # 서버에서 컨테이너 재시작
+      - name: Restart containers
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/ojosama_repo
             sudo docker-compose up -d --force-recreate
-            # 사용하지 않는 이미지 정리
-            sudo docker image prune -f
+            
             # 상태 확인
+            echo "Current directory structure:"
+            ls -la
+            echo "\nContainer status:"
             sudo docker-compose ps
-            sudo docker-compose logs --tail=50
+            echo "\nContainer logs:"
+            sudo docker-compose logs --tail=20
