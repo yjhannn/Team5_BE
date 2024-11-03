@@ -22,6 +22,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ojosama_repo/Team5_BE
+
+      # Team5_BE를 Master 브랜치와 동기화
+      - name: Sync Team5_BE with Master
+        working-directory: ./ojosama_repo/Team5_BE
+        run: |
+          git fetch origin Master
+          git reset --hard origin/Master
+          
       # 파이썬 프로젝트 체크아웃
       - name: Checkout Python project
         uses: actions/checkout@v4
@@ -29,6 +37,13 @@ jobs:
           repository: anaconda77/recommend-algorithms
           path: ojosama_repo/recommend-algorithms
           token: ${{ secrets.RECOMMEND_ALGORITHMS_PAT }}
+          
+      # Python 프로젝트를 master 브랜치와 동기화
+      - name: Sync Python project with main
+        working-directory: ./ojosama_repo/recommend-algorithms
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
           
       # Spring Boot 빌드
       - name: Set up JDK 21
