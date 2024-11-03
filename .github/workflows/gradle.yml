@@ -98,55 +98,60 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           
-      # EC2 서버에 프로젝트 전송 및 배포
-      - name: Deploy to server
+      # 서버에서 프로젝트 업데이트 및 배포
+      - name: Update and Deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            # 기존 컨테이너 중지
             cd ~/ojosama_repo
+            
+            # 컨테이너 중지
             sudo docker-compose down
             
-            # 기존 프로젝트 디렉토리 정리
-            rm -rf Team5_BE
-            rm -rf recommend-algorithms
-
-      # 프로젝트 파일 전송 (디버그 모드 활성화)
-      - name: Transfer project files
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "./Team5_BE,./recommend-algorithms"
-          target: "~/ojosama_repo"
-          strip_components: 1
-          debug: true  # 디버그 모드 활성화
-
-      # 서버에서 파일 수신 확인 및 컨테이너 재시작
-      - name: Verify and restart
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd ~/ojosama_repo
-            echo "Server directory contents:"
-            ls -la
-            echo "\nTeam5_BE contents:"
-            ls -la Team5_BE || echo "Team5_BE not found"
-            echo "\nrecommend-algorithms contents:"
-            ls -la recommend-algorithms || echo "recommend-algorithms not found"
-            
-            if [ -d "Team5_BE" ] && [ -d "recommend-algorithms" ]; then
-              echo "Projects transferred successfully"
-              sudo docker-compose up -d --force-recreate
-              sudo docker-compose ps
+            # Spring Boot 프로젝트 업데이트
+            if [ -d "Team5_BE" ]; then
+              echo "Updating Spring Boot project..."
+              cd Team5_BE
+              git fetch origin
+              git reset --hard origin/Master
+              cd ..
             else
-              echo "Project transfer failed"
-              exit 1
+              echo "Cloning Spring Boot project..."
+              git clone -b Master https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
             fi
+            
+            # Python 프로젝트 업데이트
+            if [ -d "recommend-algorithms" ]; then
+              echo "Updating Python project..."
+              cd recommend-algorithms
+              git fetch origin
+              git reset --hard origin/main
+              cd ..
+            else
+              echo "Cloning Python project..."
+              git clone -b main https://oauth2:${{ secrets.RECOMMEND_ALGORITHMS_PAT }}@github.com/anaconda77/recommend-algorithms.git
+            fi
+            
+            # 프로젝트 상태 확인
+            echo "Current directory structure:"
+            ls -la
+            
+            echo "Spring Boot project status:"
+            cd Team5_BE && git log -1 --pretty=format:"%h - %an, %ar : %s" && cd ..
+            
+            echo "Python project status:"
+            cd recommend-algorithms && git log -1 --pretty=format:"%h - %an, %ar : %s" && cd ..
+            
+            # 컨테이너 재시작
+            sudo docker-compose up -d --force-recreate
+            
+            # 컨테이너 상태 확인
+            echo "Container status:"
+            sudo docker-compose ps
+            
+            # 컨테이너 로그 확인
+            echo "Container logs:"
+            sudo docker-compose logs --tail=20
