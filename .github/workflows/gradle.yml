@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "Master", "week*" ]
   pull_request:
-    branches: [ "Master", "week*" ]
+    branches: [ "Master" ]
 
 jobs:
   build-and-deploy:
