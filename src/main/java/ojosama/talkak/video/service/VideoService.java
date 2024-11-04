@@ -9,7 +9,7 @@ import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.redis.domain.VideoInfo;
 import ojosama.talkak.redis.repository.VideoInfoRepository;
-import ojosama.talkak.redis.service.ReactionService;
+import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.VideoCategoryRequest;

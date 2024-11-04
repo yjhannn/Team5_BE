@@ -53,6 +53,10 @@ public class RedisService {
         redisTemplate.opsForHash().put(key, hashKey, value);
     }
 
+    public void incrementHashValue(String key, String hashKey, int delta) {
+        redisTemplate.opsForHash().increment(key, hashKey, delta);
+    }
+
     public Optional<String> getValues(String key) {
         Object value = redisTemplate.opsForValue().get(key);
         return Optional.ofNullable(value)

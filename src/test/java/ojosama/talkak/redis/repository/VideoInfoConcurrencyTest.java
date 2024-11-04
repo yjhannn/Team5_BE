@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import ojosama.talkak.redis.config.RecommendTestContainerConfig;
 import ojosama.talkak.redis.config.RedisTestContainerConfig;
 import ojosama.talkak.redis.domain.VideoInfo;
-import ojosama.talkak.redis.service.ReactionService;
+import ojosama.talkak.reaction.service.ReactionService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
