@@ -2,32 +2,29 @@ package ojosama.talkak.recommendation.repository;
 
 import java.util.Map;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import ojosama.talkak.common.util.HashConverter;
-import ojosama.talkak.common.RedisRepository;
+import ojosama.talkak.common.util.RedisUtil;
 import ojosama.talkak.recommendation.domain.Reaction;
 import ojosama.talkak.recommendation.key.ReactionKey;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class ReactionsRepository {
 
-    private final RedisRepository redisRepository;
+    private final RedisUtil redisUtil;
     private final HashConverter hashConverter;
-
-    public ReactionsRepository(RedisRepository redisRepository, HashConverter hashConverter) {
-        this.redisRepository = redisRepository;
-        this.hashConverter = hashConverter;
-    }
 
     public Reaction save(Long memberId, Long videoId, Reaction reaction) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        redisRepository.setHashOps(key, hashConverter.toMap(reaction));
-        return hashConverter.FromMap(redisRepository.getHashOps(key), Reaction.class);
+        redisUtil.setHashOps(key, hashConverter.toMap(reaction));
+        return hashConverter.FromMap(redisUtil.getHashOps(key), Reaction.class);
     }
 
     public Optional<Reaction> findByMemberIdAndVideoId(Long memberId, Long videoId) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        Map<String, Object> entries = redisRepository.getHashOps(key);
+        Map<String, Object> entries = redisUtil.getHashOps(key);
 
         if (entries.isEmpty()) {
             return Optional.empty();
@@ -39,6 +36,6 @@ public class ReactionsRepository {
 
     public void delete(Long memberId, Long videoId) {
         String key = ReactionKey.REACTION.generateKey(memberId, videoId);
-        redisRepository.deleteHash(key);
+        redisUtil.deleteHash(key);
     }
 }

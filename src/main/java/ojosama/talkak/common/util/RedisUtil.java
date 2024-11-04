@@ -1,4 +1,4 @@
-package ojosama.talkak.common;
+package ojosama.talkak.common.util;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -15,13 +16,10 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RedisRepository {
+@RequiredArgsConstructor
+public class RedisUtil {
 
     private final RedisTemplate<String, Object> redisTemplate;
-
-    public RedisRepository(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public void setValues(String key, String data) {
         ValueOperations<String, Object> values = redisTemplate.opsForValue();

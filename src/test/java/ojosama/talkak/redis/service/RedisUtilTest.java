@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.IntStream;
 import ojosama.talkak.common.util.HashConverter;
 import ojosama.talkak.common.config.RedisConfig;
-import ojosama.talkak.common.RedisRepository;
+import ojosama.talkak.common.util.RedisUtil;
 import ojosama.talkak.recommendation.domain.EventQueue;
 import ojosama.talkak.recommendation.domain.VideoInfo;
 import ojosama.talkak.recommendation.innerkey.ScoresSetKey;
@@ -29,14 +29,14 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 
 @SpringBootTest(classes = {RedisConfig.class,
-    RedisProperties.class, RedisRepository.class, VideoInfoRepository.class,
+    RedisProperties.class, RedisUtil.class, VideoInfoRepository.class,
     ScoresRepository.class, EventQueueRepository.class})
-class RedisRepositoryTest {
+class RedisUtilTest {
 
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
     @Autowired
-    private RedisRepository redisRepository;
+    private RedisUtil redisUtil;
     @Autowired
     private HashConverter hashConverter;
     @Autowired
@@ -72,10 +72,10 @@ class RedisRepositoryTest {
         for (int i = 0; i < 100; i++) {
             Float scores = 0f + i + 1;
             String setKey = ScoresSetKey.SCORE.generateKey((long) i + 1);
-            redisRepository.setZValues(key, setKey, scores);
+            redisUtil.setZValues(key, setKey, scores);
         }
 
-        Set<TypedTuple<Object>> value = redisRepository.getSortedSetOps(key, 10);
+        Set<TypedTuple<Object>> value = redisUtil.getSortedSetOps(key, 10);
         assertThat(value).hasSize(10);
         assertThat(value)
             .satisfies(set -> {

@@ -2,8 +2,9 @@ package ojosama.talkak.recommendation.repository;
 
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import ojosama.talkak.common.util.HashConverter;
-import ojosama.talkak.common.RedisRepository;
+import ojosama.talkak.common.util.RedisUtil;
 import ojosama.talkak.recommendation.domain.Scores;
 import ojosama.talkak.recommendation.innerkey.ScoresSetKey;
 import ojosama.talkak.recommendation.key.DefaultScoresKey;
@@ -12,15 +13,10 @@ import org.springframework.data.redis.core.ZSetOperations.TypedTuple;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class ScoresRepository {
 
-    private final RedisRepository redisRepository;
-    private final HashConverter hashConverter;
-
-    public ScoresRepository(RedisRepository redisRepository, HashConverter hashConverter) {
-        this.redisRepository = redisRepository;
-        this.hashConverter = hashConverter;
-    }
+    private final RedisUtil redisUtil;
 
     public List<Scores> findDefaultTopRank(Long categoryId, long count) {
         String key = DefaultScoresKey.SCORES.generateKey(categoryId);
@@ -33,7 +29,7 @@ public class ScoresRepository {
     }
 
     private List<Scores> getScoresList(Long categoryId, long count, String key) {
-        Set<TypedTuple<Object>> tuple = redisRepository.getSortedSetOps(key, count);
+        Set<TypedTuple<Object>> tuple = redisUtil.getSortedSetOps(key, count);
 
         return tuple.stream()
             .filter(t -> t.getValue() != null && t.getScore() != null)

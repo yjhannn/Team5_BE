@@ -1,6 +1,7 @@
 package ojosama.talkak.recommendation.service;
 
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import ojosama.talkak.recommendation.domain.Scores;
 import ojosama.talkak.recommendation.repository.ScoresRepository;
 import ojosama.talkak.video.domain.Video;
@@ -8,6 +9,7 @@ import ojosama.talkak.video.repository.VideoRepository;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RecommendationService {
 
     private ScoresRepository scoresRepository;
@@ -15,10 +17,6 @@ public class RecommendationService {
 
     public static final long RECOMMENDATION_VIDEOS_COUNT = 10;
 
-    public RecommendationService(ScoresRepository scoresRepository, VideoRepository videoRepository) {
-        this.scoresRepository = scoresRepository;
-        this.videoRepository = videoRepository;
-    }
 
     public List<Video> getDefaultRecommendationVideos(Long categoryId) {
         return videoRepository.findAllById(scoresRepository.findDefaultTopRank(categoryId, RECOMMENDATION_VIDEOS_COUNT)
