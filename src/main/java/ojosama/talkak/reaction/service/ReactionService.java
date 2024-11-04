@@ -1,27 +1,26 @@
 package ojosama.talkak.reaction.service;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.ReactionError;
-import ojosama.talkak.redis.HashConverter;
-import ojosama.talkak.redis.RedisService;
-import ojosama.talkak.redis.domain.Reaction;
-import ojosama.talkak.redis.domain.VideoInfo;
-import ojosama.talkak.redis.innerkey.VideoHashKey;
-import ojosama.talkak.redis.key.VideoKey;
-import ojosama.talkak.redis.repository.ReactionsRepository;
-import org.springframework.data.redis.core.RedisTemplate;
+import ojosama.talkak.common.util.HashConverter;
+import ojosama.talkak.common.RedisRepository;
+import ojosama.talkak.recommendation.domain.Reaction;
+import ojosama.talkak.recommendation.domain.VideoInfo;
+import ojosama.talkak.recommendation.innerkey.VideoHashKey;
+import ojosama.talkak.recommendation.key.VideoKey;
+import ojosama.talkak.recommendation.repository.ReactionsRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ReactionService {
 
     private final ReactionsRepository reactionsRepository;
-    private final RedisService redisService;
+    private final RedisRepository redisRepository;
     private final HashConverter hashConverter;
 
-    public ReactionService(ReactionsRepository reactionsRepository, RedisService redisService,
+    public ReactionService(ReactionsRepository reactionsRepository, RedisRepository redisRepository,
         HashConverter hashConverter) {
         this.reactionsRepository = reactionsRepository;
-        this.redisService = redisService;
+        this.redisRepository = redisRepository;
         this.hashConverter = hashConverter;
     }
 
@@ -45,14 +44,14 @@ public class ReactionService {
 
     public VideoInfo incrementViewCount(Long categoryId, Long videoId) {
         String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        redisService.incrementHashValue(key, VideoHashKey.VIEW_COUNT.getKey(), 1);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
+        redisRepository.incrementHashValue(key, VideoHashKey.VIEW_COUNT.getKey(), 1);
+        return hashConverter.FromMap(redisRepository.getHashOps(key), VideoInfo.class);
     }
 
     public VideoInfo incrementLikeCount(Long categoryId, Long videoId) {
         String key = VideoKey.VIDEO_INFO.generateKey(categoryId, videoId);
-        redisService.incrementHashValue(key, VideoHashKey.LIKE_COUNT.getKey(), 1);
-        return hashConverter.FromMap(redisService.getHashOps(key), VideoInfo.class);
+        redisRepository.incrementHashValue(key, VideoHashKey.LIKE_COUNT.getKey(), 1);
+        return hashConverter.FromMap(redisRepository.getHashOps(key), VideoInfo.class);
     }
 
 }

@@ -2,7 +2,7 @@ package ojosama.talkak.video.response;
 
 import lombok.Getter;
 import ojosama.talkak.member.domain.Member;
-import ojosama.talkak.redis.domain.VideoInfo;
+import ojosama.talkak.recommendation.domain.VideoInfo;
 import ojosama.talkak.video.domain.Video;
 
 @Getter
