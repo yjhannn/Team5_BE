@@ -1,0 +1,179 @@
+name: Team5_BE Project CI/CD
+
+on:
+  push:
+    branches: [ "Master", "week*" ]
+  pull_request:
+    branches: [ "Master" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 전체 레포지토리 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ojosama_repo  # 상위 디렉토리 이름으로 체크아웃
+
+      # Spring Boot 프로젝트 체크아웃
+      - name: Checkout Spring boot Project
+        uses: actions/checkout@v4
+        with:
+          path: ojosama_repo/Team5_BE
+
+      # Team5_BE를 Master 브랜치와 동기화
+      - name: Sync Team5_BE with Master
+        working-directory: ./ojosama_repo/Team5_BE
+        run: |
+          echo "Current git status:"
+          git status
+          
+          echo "\nCurrent branch and commit:"
+          git branch -v
+          
+          echo "\nFetching all changes..."
+          git fetch --all --prune
+          
+          echo "\nChecking remote branches:"
+          git branch -r
+          
+          echo "\nChecking out and pulling Master..."
+          git checkout Master
+          git pull origin Master
+          
+          echo "\nFinal git status:"
+          git status
+          
+          echo "\nLatest commits:"
+          git log --oneline -n 5
+          
+          echo "\nFinal directory listing:"
+          ls -la
+
+      # 파이썬 프로젝트 체크아웃
+      - name: Checkout Python project
+        uses: actions/checkout@v4
+        with:
+          repository: anaconda77/recommend-algorithms
+          path: ojosama_repo/recommend-algorithms
+          token: ${{ secrets.RECOMMEND_ALGORITHMS_PAT }}
+
+      # Python 프로젝트를 master 브랜치와 동기화
+      - name: Sync Python project with main
+        working-directory: ./ojosama_repo/recommend-algorithms
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
+      # Spring Boot 빌드
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Create Spring Boot properties
+        run: |
+          mkdir -p ./ojosama_repo/Team5_BE/src/main/resources
+          echo "${{ secrets.APPLICATION }}" > ./ojosama_repo/Team5_BE/src/main/resources/application.properties
+          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-local.properties
+          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-oauth.properties
+
+      - name: Build Spring Boot
+        working-directory: ./ojosama_repo/Team5_BE
+        run: |
+          chmod +x gradlew
+          ./gradlew clean build --exclude-task test
+
+      # Docker 설정
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # 서버에서 프로젝트 업데이트 및 배포
+      - name: Update and Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd ~/ojosama_repo
+            
+            # 컨테이너 중지
+            sudo docker-compose down
+            
+            # 기존 이미지 제거
+            echo "Removing old images..."
+            sudo docker rmi $(sudo docker images 'ojosama_repo_spring-app' -q) || true
+            sudo docker rmi $(sudo docker images 'ojosama_repo_fastapi-app' -q) || true
+            
+            # Spring Boot 프로젝트 업데이트
+            if [ -d "Team5_BE" ]; then
+              echo "Updating Spring Boot project..."
+              cd Team5_BE
+              git fetch origin
+              git reset --hard origin/Master
+            else
+              echo "Cloning Spring Boot project..."
+              git clone -b Master https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
+              cd Team5_BE
+            fi
+
+            # Spring Boot 프로젝트 빌드
+            echo "Building Spring Boot project..."
+            chmod +x ./gradlew
+            ./gradlew clean build --exclude-task test
+            
+            # 빌드 결과 확인
+            echo "Build output:"
+            rm -f build/libs/*-plain.jar
+            ls -la build/libs/
+            cd ..
+            
+            # Python 프로젝트 업데이트
+            if [ -d "recommend-algorithms" ]; then
+              echo "Updating Python project..."
+              cd recommend-algorithms
+              git fetch origin
+              git reset --hard origin/master
+              cd ..
+            else
+              echo "Cloning Python project..."
+              git clone -b master https://oauth2:${{ secrets.RECOMMEND_ALGORITHMS_PAT }}@github.com/anaconda77/recommend-algorithms.git
+            fi
+            
+            # 프로젝트 상태 확인
+            echo "Current directory structure:"
+            ls -la
+            
+            echo "Spring Boot project status:"
+            cd Team5_BE && git log -1 --pretty=format:"%h - %an, %ar : %s" && cd ..
+            
+            echo "Python project status:"
+            cd recommend-algorithms && git log -1 --pretty=format:"%h - %an, %ar : %s" && cd ..
+            
+            # application.properties 파일 생성 (필요한 경우)
+            mkdir -p Team5_BE/src/main/resources
+            echo "${{ secrets.APPLICATION }}" > Team5_BE/src/main/resources/application.properties
+            echo "${{ secrets.APPLICATION_LOCAL }}" > Team5_BE/src/main/resources/application-local.properties
+            echo "${{ secrets.APPLICATION_OAUTH }}" > Team5_BE/src/main/resources/application-oauth.properties
+            
+            # 컨테이너 재시작
+            sudo docker-compose up -d --force-recreate
+            
+            # 컨테이너 상태 확인
+            echo "Container status:"
+            sudo docker-compose ps
+            
+            # 컨테이너 로그 확인
+            echo "Container logs:"
+            sudo docker-compose logs --tail=20
