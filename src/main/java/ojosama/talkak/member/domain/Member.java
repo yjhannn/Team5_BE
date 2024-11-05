@@ -50,10 +50,19 @@ public class Member extends BaseEntity {
         return new Member(username, imageUrl, email);
     }
 
-    public void updateMemberInfo(String gender, String age) {
-        if (gender == null || age == null) {
+    public void createMemberInfo(String gender, String age) {
+        checkMemberInfoInputs(gender, age);
+        Age newAge = Age.fromName(age);
+        if (!gender.matches("남자|여자") || newAge == null) {
             throw TalKakException.of(MemberError.ERROR_UPDATE_MEMBER_INFO);
         }
+
+        this.gender = gender.equals("남자");
+        this.age = newAge;
+    }
+
+    public void updateMemberInfo(String gender, String age) {
+        checkMemberInfoInputs(gender, age);
         Age newAge = Age.fromName(age);
         if (!gender.matches("남자|여자") || newAge == null) {
             throw TalKakException.of(MemberError.ERROR_UPDATE_MEMBER_INFO);
@@ -63,6 +72,12 @@ public class Member extends BaseEntity {
             this.gender = !this.gender;
         }
         this.age = newAge;
+    }
+
+    private static void checkMemberInfoInputs(String gender, String age) {
+        if (gender == null || age == null) {
+            throw TalKakException.of(MemberError.ERROR_UPDATE_MEMBER_INFO);
+        }
     }
 
     public String convertGenderToString() {
