@@ -29,6 +29,11 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     {
         String headerValue = request.getHeader("Authorization");
 
+        if (headerValue == null) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (isValidToken(headerValue)) {
             SecurityContextHolder.getContext()
                 .setAuthentication(
