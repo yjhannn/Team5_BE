@@ -27,10 +27,16 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (isValidToken(headerValue)) {
             SecurityContextHolder.getContext()
                 .setAuthentication(
-                    createUsernamePasswordAuthenticationToken(headerValue.split(" ")[1]));
+                    createUsernamePasswordAuthenticationToken(resolveToken(headerValue)));
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isValidToken(String value) {
+        return !Objects.isNull(value) &&
+            value.startsWith("Bearer ") &&
+            jwtUtil.isValidToken(value.split(" ")[1]);
     }
 
     private UsernamePasswordAuthenticationToken createUsernamePasswordAuthenticationToken(String token) {
@@ -38,9 +44,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return new UsernamePasswordAuthenticationToken(id, null, new ArrayList<>());
     }
 
-    private boolean isValidToken(String value) {
-        return !Objects.isNull(value) &&
-            value.startsWith("Bearer ") &&
-            jwtUtil.isValidToken(value.split(" ")[1]);
+    private String resolveToken(String headerValue) {
+        return headerValue.split(" ")[1].trim();
     }
 }
