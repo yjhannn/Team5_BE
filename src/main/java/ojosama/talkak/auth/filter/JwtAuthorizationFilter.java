@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import ojosama.talkak.auth.utils.JwtUtil;
+import ojosama.talkak.common.exception.TalKakException;
+import ojosama.talkak.common.exception.code.AuthError;
+import ojosama.talkak.common.exception.code.MemberError;
+import ojosama.talkak.common.util.RedisUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -17,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final RedisUtil redisUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -28,9 +33,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext()
                 .setAuthentication(
                     createUsernamePasswordAuthenticationToken(resolveToken(headerValue)));
+
+            filterChain.doFilter(request, response);
+            return;
         }
 
-        filterChain.doFilter(request, response);
+        String refreshToken = redisUtil.getValues(
+                String.format("REFRESH_TOKEN:%d", getIdFromToken(resolveToken(headerValue))))
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+
+        if (jwtUtil.isValidToken(refreshToken)) {
+            throw TalKakException.of(AuthError.INVALID_ACCESS_TOKEN);
+        }
+        throw TalKakException.of(AuthError.INVALID_REFRESH_TOKEN);
     }
 
     private boolean isValidToken(String value) {
@@ -40,8 +55,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private UsernamePasswordAuthenticationToken createUsernamePasswordAuthenticationToken(String token) {
-        Long id = jwtUtil.getIdFromToken(token);
+        Long id = getIdFromToken(token);
         return new UsernamePasswordAuthenticationToken(id, null, new ArrayList<>());
+    }
+
+    private Long getIdFromToken(String token) {
+        return jwtUtil.getIdFromToken(token);
     }
 
     private String resolveToken(String headerValue) {
