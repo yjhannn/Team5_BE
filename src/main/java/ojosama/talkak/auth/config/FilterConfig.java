@@ -23,7 +23,7 @@ public class FilterConfig {
     }
 
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter(JwtUtil jwtUtil, RedisUtil redisUtil) {
-        return new JwtAuthorizationFilter(jwtUtil, redisUtil);
+    public JwtAuthorizationFilter jwtAuthorizationFilter(JwtUtil jwtUtil) {
+        return new JwtAuthorizationFilter(jwtUtil);
     }
 }

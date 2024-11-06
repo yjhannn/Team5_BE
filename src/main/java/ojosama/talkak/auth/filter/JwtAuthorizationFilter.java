@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import ojosama.talkak.auth.utils.JwtUtil;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.AuthError;
-import ojosama.talkak.common.exception.code.MemberError;
-import ojosama.talkak.common.util.RedisUtil;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,7 +19,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final RedisUtil redisUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
@@ -33,7 +30,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
         if (isValidToken(headerValue)) {
             SecurityContextHolder.getContext()
                 .setAuthentication(
@@ -42,15 +38,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String refreshToken = redisUtil.getValues(
-                String.format("REFRESH_TOKEN:%d", getIdFromToken(resolveToken(headerValue))))
-            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
-
-        if (jwtUtil.isValidToken(refreshToken)) {
-            throw TalKakException.of(AuthError.INVALID_ACCESS_TOKEN);
-        }
-        throw TalKakException.of(AuthError.INVALID_REFRESH_TOKEN);
+        throw TalKakException.of(AuthError.INVALID_ACCESS_TOKEN);
     }
 
     private boolean isValidToken(String value) {
