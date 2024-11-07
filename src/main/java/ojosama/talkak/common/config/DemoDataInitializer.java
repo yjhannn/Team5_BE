@@ -9,8 +9,6 @@ import ojosama.talkak.category.domain.CategoryType;
 import ojosama.talkak.category.repository.CategoryRepository;
 import ojosama.talkak.comment.domain.Comment;
 import ojosama.talkak.comment.repository.CommentRepository;
-import ojosama.talkak.common.exception.TalKakException;
-import ojosama.talkak.common.exception.code.CategoryError;
 import ojosama.talkak.common.util.HashConverter;
 import ojosama.talkak.common.util.RedisUtil;
 import ojosama.talkak.member.domain.Member;
@@ -20,8 +18,10 @@ import ojosama.talkak.recommendation.key.VideoKey;
 import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+@Profile("local")
 @Component
 public class DemoDataInitializer {
     private final MemberRepository memberRepository;
@@ -31,9 +31,6 @@ public class DemoDataInitializer {
     private final CommentRepository commentRepository;
     private final HashConverter hashConverter;
     private final RedisUtil redisUtil;
-    private final List<CategoryType> categoryTypes = Arrays.asList(
-        CategoryType.MUSIC, CategoryType.JOURNEY, CategoryType.GAME, CategoryType.SPORT, CategoryType.FOOD
-    );
     private final List<String> thumbnailUrls = Arrays.asList(
         "https://i.ytimg.com/vi/93KBXzJduBk/default.jpg",
         "https://i.ytimg.com/vi/z06UCIGlY8U/default.jpg",
@@ -65,13 +62,10 @@ public class DemoDataInitializer {
         List<Member> members = List.of(member1, member2);
 
         // 카테고리 데이터
-        Category musicCategory = categoryRepository.save(new Category(CategoryType.MUSIC));
-        Category journeyCategory = categoryRepository.save(new Category(CategoryType.JOURNEY));
-        Category gameCategory = categoryRepository.save(new Category(CategoryType.GAME));
-        Category sportCategory = categoryRepository.save(new Category(CategoryType.SPORT));
-        Category foodCategory = categoryRepository.save(new Category(CategoryType.FOOD));
-        List<Category> categories = List.of(musicCategory, journeyCategory, gameCategory,
-            sportCategory, foodCategory);
+        Arrays.stream(CategoryType.values())
+            .filter(type -> categoryRepository.findByCategoryType(type).isEmpty())
+            .forEach(type -> categoryRepository.save(new Category(type)));
+        List<Category> categories = categoryRepository.findAll();
 
 
         // 비디오 데이터
@@ -95,7 +89,7 @@ public class DemoDataInitializer {
                     commentRepository.save(comment);
                 }
 
-//                 Redis에 VideoInfo 저장
+                // Redis에 VideoInfo 저장
                 VideoInfo videoInfo = VideoInfo.of(video.getCreatedAt(), video.getViews(),
                     video.getCountLikes());
                 String key = VideoKey.VIDEO_INFO.generateKey(category.getId(),
