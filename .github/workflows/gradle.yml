@@ -40,8 +40,8 @@ jobs:
           git branch -r
           
           echo "\nChecking out and pulling Master..."
-          git checkout week10
-          git pull origin week10
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }}
           
           echo "\nFinal git status:"
           git status
@@ -120,10 +120,10 @@ jobs:
               echo "Updating Spring Boot project..."
               cd Team5_BE
               git fetch origin
-              git reset --hard origin/week10
+              git reset --hard origin/${{ github.ref_name }}
             else
               echo "Cloning Spring Boot project..."
-              git clone -b week10 https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
+              git clone -b ${{ github.ref_name }} https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
               cd Team5_BE
             fi
 
