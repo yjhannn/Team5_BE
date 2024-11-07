@@ -43,7 +43,7 @@ class MemberServiceTest {
     private CategoryRepository categoryRepository;
 
     Member member;
-    List<Category> categories;
+    List<Category> categories = new ArrayList<>();
     List<CategoryType> categoriesNames = Arrays.asList(CategoryType.values());
 
     /***
@@ -56,8 +56,10 @@ class MemberServiceTest {
     @BeforeEach
     void before() {
         member = memberRepository.save(demoMember());
+        categories.add(categoryRepository.findByCategoryType(CategoryType.FOOD).get());
+        categories.add(categoryRepository.findByCategoryType(CategoryType.JOURNEY).get());
+        categories.add(categoryRepository.findByCategoryType(CategoryType.GAME).get());
 
-        categories = categoryRepository.findAll();
         List<MemberCategory> memberCategories = categories.stream()
             .map(c -> MemberCategory.of(member, c))
             .limit(3)
@@ -88,15 +90,14 @@ class MemberServiceTest {
     void update_myPage_info() {
         MyPageInfoRequest request = new MyPageInfoRequest("여자", "20대",
             demoCategoryIds(Arrays.asList("음식", "음악", "스포츠")));
-        MyPageInfoResponse memberInfo = memberService.updateMemberInfo(member.getId(), request);
-        List<String> categoryNames = memberInfo.categories().stream()
-            .map(CategoryResponse::name)
-            .toList();
+        memberService.updateMemberInfo(member.getId(), request);
+        MyPageInfoResponse fetchInfo = memberService.getMemberInfo(member.getId());
 
-        assertThat(memberInfo.gender()).isEqualTo("여자");
-        assertThat(memberInfo.age()).isEqualTo("20대");
-        assertThat(categoryNames.size()).isEqualTo(3);
-        assertThat(categoryNames).containsOnly("음식", "음악", "스포츠");
+        assertThat(fetchInfo.gender()).isEqualTo("여자");
+        assertThat(fetchInfo.age()).isEqualTo("20대");
+        assertThat(fetchInfo.categories().size()).isEqualTo(3);
+        assertThat(fetchInfo.categories().stream().map(CategoryResponse::name))
+            .containsOnly("음식", "음악", "스포츠");
     }
 
     @DisplayName("마이페이지 개인정보 수정하기 실패-유효하지 않은 성별 정보")
