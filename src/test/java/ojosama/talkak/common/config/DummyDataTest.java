@@ -13,8 +13,10 @@ import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.category.repository.CategoryRepository;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
+@ActiveProfiles("local")
 public class DummyDataTest {
 
     @Autowired
