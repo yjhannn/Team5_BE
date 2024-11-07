@@ -23,7 +23,7 @@ jobs:
         with:
           path: ojosama_repo/Team5_BE
 
-      # Team5_BE를 Master 브랜치와 동기화
+      # Team5_BE를 Master/Weekly 브랜치와 동기화(개발 기간에는 Weekly와 동기화)
       - name: Sync Team5_BE with Master
         working-directory: ./ojosama_repo/Team5_BE
         run: |
@@ -40,8 +40,8 @@ jobs:
           git branch -r
           
           echo "\nChecking out and pulling Master..."
-          git checkout Master
-          git pull origin Master
+          git checkout week10
+          git pull origin week10
           
           echo "\nFinal git status:"
           git status
