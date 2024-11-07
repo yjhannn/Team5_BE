@@ -53,7 +53,7 @@ public class MemberService {
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
         List<Category> categories = new ArrayList<>();
 
-        member.updateMemberInfo(request.gender(), request.age());
+        member.createMemberInfo(request.gender(), request.age());
 
         request.categories()
             .stream()
