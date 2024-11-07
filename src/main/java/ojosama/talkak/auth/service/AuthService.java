@@ -8,6 +8,7 @@ import ojosama.talkak.auth.utils.JwtUtil;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.AuthError;
 import ojosama.talkak.common.exception.code.MemberError;
+import ojosama.talkak.common.util.RedisKeyUtil;
 import ojosama.talkak.common.util.RedisUtil;
 import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
@@ -31,7 +32,7 @@ public class AuthService {
         String accessToken = jwtUtil.generateAccessToken(id, member.getEmail(), member.getUsername());
         refreshToken = jwtUtil.generateRefreshToken();
 
-        String key = String.format("REFRESH_TOKEN:%d", id);
+        String key = RedisKeyUtil.REFRESH_TOKEN.of(id);
         Duration duration = Duration.ofSeconds(jwtProperties.refreshTokenExpireIn());
         redisUtil.setValues(key, refreshToken, duration);
 

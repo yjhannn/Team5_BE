@@ -11,6 +11,7 @@ import ojosama.talkak.auth.config.JwtProperties;
 import ojosama.talkak.auth.dto.OAuth2UserDetails;
 import ojosama.talkak.auth.dto.TokenResponse;
 import ojosama.talkak.auth.utils.JwtUtil;
+import ojosama.talkak.common.util.RedisKeyUtil;
 import ojosama.talkak.common.util.RedisUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -31,7 +32,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
         String accessToken = jwtUtil.generateAccessToken(oAuth2User.id(), oAuth2User.email(), oAuth2User.username());
         String refreshToken = jwtUtil.generateRefreshToken();
 
-        String key = String.format("REFRESH_TOKEN:%d", oAuth2User.id());
+        String key = RedisKeyUtil.REFRESH_TOKEN.of(oAuth2User.id());
         Duration duration = Duration.ofSeconds(jwtProperties.refreshTokenExpireIn());
         redisUtil.setValues(key, refreshToken, duration);
 
