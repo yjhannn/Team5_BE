@@ -31,7 +31,9 @@ public class DummyDataTest {
     @Test
     @DisplayName("Member 더미 데이터 확인")
     void testMemberDummyData() {
+        // given & when
         List<Member> members = memberRepository.findAll();
+        // then
         assertThat(members).hasSize(2);  // 예상되는 Member 데이터 수 확인
         assertThat(members.get(0).getUsername()).isNotNull();
     }
@@ -39,7 +41,9 @@ public class DummyDataTest {
     @Test
     @DisplayName("Category 더미 데이터 확인")
     void testCategoryDummyData() {
+        // given & when
         List<Category> categories = categoryRepository.findAll();
+        // then
         assertThat(categories).isNotEmpty();
         assertThat(categories.get(0).getCategoryType()).isNotNull();
     }
@@ -47,8 +51,10 @@ public class DummyDataTest {
     @Test
     @DisplayName("Video 더미 데이터 확인")
     void testVideoDummyData() {
+        // given & when
         List<Video> videos = videoRepository.findAll();
-        assertThat(videos).hasSize(50);  // 예상되는 Video 데이터 수 확인
+        // then
+        assertThat(videos).hasSize(50);  // Video 데이터 수 확인
         assertThat(videos.get(0).getTitle()).isNotEmpty();
         assertThat(videos.get(0).getCategoryId()).isNotNull();
     }
