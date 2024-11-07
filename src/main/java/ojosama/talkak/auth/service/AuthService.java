@@ -39,6 +39,13 @@ public class AuthService {
         return TokenResponse.of(accessToken, refreshToken);
     }
 
+    public TokenResponse issue() {
+        Member member = memberRepository.save(Member.of("test", "", "test@test.com"));
+        String accessToken = jwtUtil.generateAccessToken(member.getId(), member.getEmail(), member.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken();
+        return TokenResponse.of(accessToken, refreshToken);
+    }
+
     private Member findMemberById(Long id) {
         return memberRepository.findById(id)
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
