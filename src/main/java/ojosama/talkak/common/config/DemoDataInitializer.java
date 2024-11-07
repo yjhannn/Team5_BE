@@ -95,13 +95,13 @@ public class DemoDataInitializer {
                     commentRepository.save(comment);
                 }
 
-                // Redis에 VideoInfo 저장
-//                VideoInfo videoInfo = VideoInfo.of(video.getCreatedAt(), video.getViews(),
-//                    video.getCountLikes());
-//                String key = VideoKey.VIDEO_INFO.generateKey(category.getId(),
-//                    video.getId());
-//                redisUtil.setHashOps(key, hashConverter.toMap(videoInfo));
-//                videoInfoRepository.save(category.getId(), video.getId(), videoInfo);
+//                 Redis에 VideoInfo 저장
+                VideoInfo videoInfo = VideoInfo.of(video.getCreatedAt(), video.getViews(),
+                    video.getCountLikes());
+                String key = VideoKey.VIDEO_INFO.generateKey(category.getId(),
+                    video.getId());
+                redisUtil.setHashOps(key, hashConverter.toMap(videoInfo));
+                videoInfoRepository.save(category.getId(), video.getId(), videoInfo);
 
                 // 썸네일 인덱스 증가 (순환)
                 thumbnailIndex = (thumbnailIndex + 1) % thumbnailUrls.size();
