@@ -92,9 +92,6 @@ public class DemoDataInitializer {
                 // Redis에 VideoInfo 저장
                 VideoInfo videoInfo = VideoInfo.of(video.getCreatedAt(), video.getViews(),
                     video.getCountLikes());
-//                String key = VideoKey.VIDEO_INFO.generateKey(category.getId(),
-//                    video.getId());
-//                redisUtil.setHashOps(key, hashConverter.toMap(videoInfo));
                 videoInfoRepository.save(category.getId(), video.getId(), videoInfo);
 
                 // 썸네일 인덱스 증가 (순환)
