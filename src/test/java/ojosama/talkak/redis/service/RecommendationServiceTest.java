@@ -1,7 +1,6 @@
 package ojosama.talkak.redis.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -9,14 +8,15 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import ojosama.talkak.category.domain.CategoryType;
+import ojosama.talkak.recommendation.service.RecommendationService;
 import ojosama.talkak.redis.config.RecommendTestContainerConfig;
 import ojosama.talkak.redis.config.RedisTestContainerConfig;
-import ojosama.talkak.redis.domain.EventQueue;
-import ojosama.talkak.redis.domain.Reaction;
-import ojosama.talkak.redis.domain.VideoInfo;
-import ojosama.talkak.redis.repository.EventQueueRepository;
-import ojosama.talkak.redis.repository.ReactionsRepository;
-import ojosama.talkak.redis.repository.VideoInfoRepository;
+import ojosama.talkak.recommendation.domain.EventQueue;
+import ojosama.talkak.recommendation.domain.Reaction;
+import ojosama.talkak.recommendation.domain.VideoInfo;
+import ojosama.talkak.recommendation.repository.EventQueueRepository;
+import ojosama.talkak.recommendation.repository.ReactionsRepository;
+import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,10 +26,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @Slf4j
 @ExtendWith({RedisTestContainerConfig.class, RecommendTestContainerConfig.class})
+@ActiveProfiles("test")
 class RecommendationServiceTest {
 
     @Autowired

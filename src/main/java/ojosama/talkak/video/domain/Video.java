@@ -49,6 +49,15 @@ public class Video extends BaseEntity {
         this.uniqueFileName = uniqueFileName;
     }
 
+    public Video(String title, Long memberId, Long categoryId, String thumbnail, Long views, Long likes) {
+        this.title = title;
+        this.memberId = memberId;
+        this.categoryId = categoryId;
+        this.thumbnail = thumbnail;
+        this.views = views;
+        this.countLikes = likes;
+    }
+
     public Integer commentsCount() {
         return comments == null ? 0 : comments.size();
     }

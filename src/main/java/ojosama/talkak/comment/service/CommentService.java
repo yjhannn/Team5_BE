@@ -29,7 +29,7 @@ public class CommentService {
         this.videoRepository = videoRepository;
     }
 
-    public CommentResponse createComment(long memberId, long videoId,
+    public CommentResponse createComment(Long memberId, Long videoId,
         CommentRequest commentRequest) {
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> TalKakException.of(CommentError.INVALID_MEMBER_ID));
@@ -39,7 +39,7 @@ public class CommentService {
             commentRepository.save(new Comment(member, video, commentRequest.content())));
     }
 
-    public List<CommentResponse> getCommentsByVideoId(long videoId) {
+    public List<CommentResponse> getCommentsByVideoId(Long videoId) {
         return commentRepository.findByVideoId(videoId)
             .stream()
             .map(this::convertToDTO)
