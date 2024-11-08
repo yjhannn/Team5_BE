@@ -29,8 +29,8 @@ public class RedisTestContainerConfig implements BeforeAllCallback {
         Integer mappedPort = redisContainer.getMappedPort(REDIS_PORT);
 
         // System Properties 설정
-        System.setProperty("spring.redis.host", host);
-        System.setProperty("spring.redis.port", mappedPort.toString());
+        System.setProperty("spring.data.redis.host", host);
+        System.setProperty("spring.data.redis.port", mappedPort.toString());
 
         log.debug("Redis TestContainer started at {}:{}", host, mappedPort);
     }
@@ -39,8 +39,8 @@ public class RedisTestContainerConfig implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) {
         // 시스템 프로퍼티 설정 확인
-        String host = System.getProperty("spring.redis.host");
-        String port = System.getProperty("spring.redis.port");
+        String host = System.getProperty("spring.data.redis.host");
+        String port = System.getProperty("spring.data.redis.port");
         log.debug("Verified Redis properties - Host: {}, Port: {}", host, port);
     }
 
