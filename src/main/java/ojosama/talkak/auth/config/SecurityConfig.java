@@ -3,7 +3,7 @@ package ojosama.talkak.auth.config;
 import lombok.RequiredArgsConstructor;
 import ojosama.talkak.auth.filter.JwtAuthorizationFilter;
 import ojosama.talkak.auth.filter.SuccessHandler;
-import ojosama.talkak.auth.service.AuthService;
+import ojosama.talkak.auth.service.OAuth2Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthService authService;
+    private final OAuth2Service OAuth2Service;
     private final SuccessHandler successHandler;
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
     private final AuthProperties authProperties;
@@ -49,6 +49,7 @@ public class SecurityConfig {
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", swaggerAlias).permitAll()
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
+                    .requestMatchers("/api/issue").permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2Login((oauth2Login) -> oauth2Login
@@ -57,7 +58,7 @@ public class SecurityConfig {
                 .redirectionEndpoint(endpoint -> endpoint
                     .baseUri(authProperties.redirectionUri()))
                 .userInfoEndpoint(endpoint -> endpoint
-                    .userService(authService))
+                    .userService(OAuth2Service))
                 .successHandler(successHandler)
             )
             .addFilterBefore(jwtAuthorizationFilter, AuthorizationFilter.class)

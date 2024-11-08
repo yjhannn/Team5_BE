@@ -20,11 +20,24 @@ public class JwtUtil {
     }
 
     public String generateAccessToken(Long id, String email, String username) {
-        return generateToken(id, email, username, accessTokenExpireIn);
+        long current = System.currentTimeMillis();
+        return Jwts.builder()
+            .subject(id.toString())
+            .claim("email", email)
+            .claim("username", username)
+            .issuedAt(new Date(current))
+            .expiration(new Date(current + accessTokenExpireIn))
+            .signWith(secretKey)
+            .compact();
     }
 
-    public String generateRefreshToken(Long id, String email, String username) {
-        return generateToken(id, email, username, refreshTokenExpireIn);
+    public String generateRefreshToken() {
+        long current = System.currentTimeMillis();
+        return Jwts.builder()
+            .issuedAt(new Date(current))
+            .expiration(new Date(current + refreshTokenExpireIn))
+            .signWith(secretKey)
+            .compact();
     }
 
     public boolean isValidToken(String token) {
@@ -46,17 +59,5 @@ public class JwtUtil {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject());
-    }
-
-    private String generateToken(Long id, String email, String username, Long expiration) {
-        long current = System.currentTimeMillis();
-        return Jwts.builder()
-            .subject(id.toString())
-            .claim("email", email)
-            .claim("username", username)
-            .issuedAt(new Date(current))
-            .expiration(new Date(current + expiration))
-            .signWith(secretKey)
-            .compact();
     }
 }
