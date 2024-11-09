@@ -40,6 +40,7 @@ jobs:
           git branch -r
           
           echo "\nChecking out and pulling Master..."
+
           git checkout ${{ github.ref_name }}
           git pull origin ${{ github.ref_name }}
           
@@ -79,8 +80,9 @@ jobs:
         run: |
           mkdir -p ./ojosama_repo/Team5_BE/src/main/resources
           echo "${{ secrets.APPLICATION }}" > ./ojosama_repo/Team5_BE/src/main/resources/application.properties
-          echo "${{ secrets.APPLICATION_LOCAL }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-local.properties
+          echo "${{ secrets.APPLICATION_PROD }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-prod.properties
           echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-oauth.properties
+          echo "${{ secrets.APPLICATION_TEST }}" > ./ojosama_repo/Team5_BE/src/test/resources/application-test.properties
 
       - name: Build Spring Boot
         working-directory: ./ojosama_repo/Team5_BE
@@ -116,10 +118,12 @@ jobs:
             sudo docker rmi $(sudo docker images 'ojosama_repo_spring-app' -q) || true
             
             # Spring Boot 프로젝트 업데이트(개발 기간에는 Weekly와 동기화)
+
             if [ -d "Team5_BE" ]; then
               echo "Updating Spring Boot project..."
               cd Team5_BE
               git fetch origin
+
               git reset --hard origin/${{ github.ref_name }}
             else
               echo "Cloning Spring Boot project..."
@@ -163,8 +167,9 @@ jobs:
             # application.properties 파일 생성 (필요한 경우)
             mkdir -p Team5_BE/src/main/resources
             echo "${{ secrets.APPLICATION }}" > Team5_BE/src/main/resources/application.properties
-            echo "${{ secrets.APPLICATION_LOCAL }}" > Team5_BE/src/main/resources/application-local.properties
+            echo "${{ secrets.APPLICATION_PROD }}" > Team5_BE/src/main/resources/application-prod.properties
             echo "${{ secrets.APPLICATION_OAUTH }}" > Team5_BE/src/main/resources/application-oauth.properties
+            echo "${{ secrets.APPLICATION_TEST }}" > Team5_BE/src/test/resources/application-test.properties
             
             # 컨테이너 재시작
             sudo docker-compose up -d --force-recreate
