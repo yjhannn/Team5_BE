@@ -23,7 +23,7 @@ jobs:
         with:
           path: ojosama_repo/Team5_BE
 
-      # Team5_BE를 Master 브랜치와 동기화
+      # Team5_BE를 Master/Weekly 브랜치와 동기화(개발 기간에는 Weekly와 동기화)
       - name: Sync Team5_BE with Master
         working-directory: ./ojosama_repo/Team5_BE
         run: |
@@ -40,8 +40,8 @@ jobs:
           git branch -r
           
           echo "\nChecking out and pulling Master..."
-          git checkout Master
-          git pull origin Master
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }}
           
           echo "\nFinal git status:"
           git status
@@ -114,17 +114,16 @@ jobs:
             # 기존 이미지 제거
             echo "Removing old images..."
             sudo docker rmi $(sudo docker images 'ojosama_repo_spring-app' -q) || true
-            sudo docker rmi $(sudo docker images 'ojosama_repo_fastapi-app' -q) || true
             
-            # Spring Boot 프로젝트 업데이트
+            # Spring Boot 프로젝트 업데이트(개발 기간에는 Weekly와 동기화)
             if [ -d "Team5_BE" ]; then
               echo "Updating Spring Boot project..."
               cd Team5_BE
               git fetch origin
-              git reset --hard origin/Master
+              git reset --hard origin/${{ github.ref_name }}
             else
               echo "Cloning Spring Boot project..."
-              git clone -b Master https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
+              git clone -b ${{ github.ref_name }} https://oauth2:${{ secrets.GH_TOKEN }}@github.com/kakao-tech-campus-2nd-step3/Team5_BE.git
               cd Team5_BE
             fi
 

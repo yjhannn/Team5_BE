@@ -53,7 +53,7 @@ public class MemberService {
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
         List<Category> categories = new ArrayList<>();
 
-        member.updateMemberInfo(request.gender(), request.age());
+        member.createMemberInfo(request.gender(), request.age());
 
         request.categories()
             .stream()
@@ -68,6 +68,7 @@ public class MemberService {
         return AdditionalInfoResponse.of(categories, request);
     }
 
+    @Transactional
     public MyPageInfoResponse updateMemberInfo(Long memberId, MyPageInfoRequest request) {
         // 유저 성별, 나이 검증
         Member member = memberRepository.findById(memberId)
@@ -106,11 +107,17 @@ public class MemberService {
         MyPageInfoRequest request) {
         List<MemberCategory> memberCategories = memberCategoryRepository.findAllByMemberId(
             memberId);
-        memberCategories.removeIf(
-            mc -> request.categories().stream().noneMatch(
-                c -> c.equals(mc.getCategory().getId())
-            )
-        );
+        // 삭제해야 할 카테고리들을 찾습니다
+        List<MemberCategory> categoriesToDelete = memberCategories.stream()
+            .filter(mc -> request.categories().stream()
+                .noneMatch(c -> c.equals(mc.getCategory().getId())))
+            .toList();
+
+        if (!categoriesToDelete.isEmpty()) {
+            memberCategoryRepository.deleteAll(categoriesToDelete);
+        }
+
+        memberCategories.removeAll(categoriesToDelete);
         return memberCategories;
     }
 

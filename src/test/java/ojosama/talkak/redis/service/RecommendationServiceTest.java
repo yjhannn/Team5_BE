@@ -1,7 +1,6 @@
 package ojosama.talkak.redis.service;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -27,10 +26,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @Slf4j
 @ExtendWith({RedisTestContainerConfig.class, RecommendTestContainerConfig.class})
+@ActiveProfiles("test")
 class RecommendationServiceTest {
 
     @Autowired

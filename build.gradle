@@ -43,6 +43,7 @@ dependencies {
 	implementation 'javax.activation:activation:1.1.1'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+	implementation 'mysql:mysql-connector-java:8.0.33'
 
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'io.jsonwebtoken:jjwt-api:0.12.6'
