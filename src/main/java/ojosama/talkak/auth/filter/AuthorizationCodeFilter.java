@@ -35,16 +35,10 @@ public class AuthorizationCodeFilter extends OncePerRequestFilter {
             String state = (String) params.get(OAuth2ParameterNames.STATE);
             String code = (String) params.get(OAuth2ParameterNames.CODE);
             code = URLDecoder.decode(code, StandardCharsets.UTF_8);
-            String scope = (String) params.get(OAuth2ParameterNames.SCOPE);
-            String authuser = (String) params.get("authuser");
-            String prompt = (String) params.get("prompt");
 
             Map<String, String[]> parameterMap = new LinkedHashMap<>(request.getParameterMap());
             parameterMap.put(OAuth2ParameterNames.STATE, new String[]{state});
             parameterMap.put(OAuth2ParameterNames.CODE, new String[]{code});
-            parameterMap.put(OAuth2ParameterNames.SCOPE, new String[]{scope});
-            parameterMap.put("authuser", new String[]{authuser});
-            parameterMap.put("prompt", new String[]{prompt});
 
             request = new HttpServletRequestWrapper(request) {
                 @Override
