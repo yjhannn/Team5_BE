@@ -21,7 +21,7 @@ public class SecurityServiceConfig {
     }
 
     @Bean
-    public StatelessAuthorizationRequestRepository statelessAuthorizationRequestRepository() {
-        return new StatelessAuthorizationRequestRepository();
+    public StatelessAuthorizationRequestRepository statelessAuthorizationRequestRepository(AuthProperties authProperties, GoogleProperties googleProperties) {
+        return new StatelessAuthorizationRequestRepository(authProperties, googleProperties);
     }
 }

@@ -12,20 +12,24 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import ojosama.talkak.auth.config.AuthProperties;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
 public class AuthorizationCodeFilter extends OncePerRequestFilter {
 
+    private final AuthProperties authProperties;
     private final ObjectMapper objectMapper;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException
     {
         if ("POST".equalsIgnoreCase(request.getMethod()) &&
-            "/api/auth/code/google".equals(request.getRequestURI()))
+            antPathMatcher.match(authProperties.redirectionUri(), request.getRequestURI()))
         {
             Map<String, Object> params = objectMapper.readValue(request.getInputStream(), Map.class);
             String state = (String) params.get(OAuth2ParameterNames.STATE);

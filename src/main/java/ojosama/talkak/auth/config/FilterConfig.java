@@ -18,8 +18,8 @@ public class FilterConfig {
     }
 
     @Bean
-    public AuthorizationCodeFilter authorizationCodeFilter(ObjectMapper objectMapper) {
-        return new AuthorizationCodeFilter(objectMapper);
+    public AuthorizationCodeFilter authorizationCodeFilter(AuthProperties authProperties, ObjectMapper objectMapper) {
+        return new AuthorizationCodeFilter(authProperties, objectMapper);
     }
 
     @Bean
