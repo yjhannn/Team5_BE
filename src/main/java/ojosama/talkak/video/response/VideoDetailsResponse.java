@@ -8,6 +8,7 @@ import ojosama.talkak.video.domain.Video;
 @Getter
 public class VideoDetailsResponse {
     private Long id;
+    private String title;
     private Long categoryId;
     private String videoUrl;
     private MemberInfoResponse memberInfo;
@@ -18,6 +19,7 @@ public class VideoDetailsResponse {
     // Video, VideoInfo, Member 객체를 받는 생성자
     public VideoDetailsResponse(Video video, VideoInfo videoInfo, Member member) {
         this.id = video.getId();
+        this.title = video.getTitle();
         this.categoryId = video.getCategoryId();
         this.videoUrl = video.getVideoUrl();
         this.likeCount = videoInfo.getLikeCount();
