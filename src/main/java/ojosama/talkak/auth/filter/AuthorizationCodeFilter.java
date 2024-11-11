@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class AuthorizationCodeFilter extends OncePerRequestFilter {
             Map<String, Object> params = objectMapper.readValue(request.getInputStream(), Map.class);
             String state = (String) params.get(OAuth2ParameterNames.STATE);
             String code = (String) params.get(OAuth2ParameterNames.CODE);
+            code = URLDecoder.decode(code, StandardCharsets.UTF_8);
             String scope = (String) params.get(OAuth2ParameterNames.SCOPE);
             String authuser = (String) params.get("authuser");
             String prompt = (String) params.get("prompt");
