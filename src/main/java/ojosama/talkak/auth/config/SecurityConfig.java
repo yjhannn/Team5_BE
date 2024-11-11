@@ -1,9 +1,11 @@
 package ojosama.talkak.auth.config;
 
 import lombok.RequiredArgsConstructor;
+import ojosama.talkak.auth.filter.AuthorizationCodeFilter;
 import ojosama.talkak.auth.filter.JwtAuthorizationFilter;
 import ojosama.talkak.auth.filter.SuccessHandler;
 import ojosama.talkak.auth.service.OAuth2Service;
+import ojosama.talkak.auth.service.StatelessAuthorizationRequestRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -25,6 +28,8 @@ public class SecurityConfig {
 
     private final OAuth2Service OAuth2Service;
     private final SuccessHandler successHandler;
+    private final StatelessAuthorizationRequestRepository statelessAuthorizationRequestRepository;
+    private final AuthorizationCodeFilter authorizationCodeFilter;
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
     private final AuthProperties authProperties;
 
@@ -59,13 +64,15 @@ public class SecurityConfig {
             )
             .oauth2Login((oauth2Login) -> oauth2Login
                 .authorizationEndpoint(endpoint -> endpoint
-                    .baseUri(authProperties.authorizationUri()))
+                    .baseUri(authProperties.authorizationUri())
+                    .authorizationRequestRepository(statelessAuthorizationRequestRepository))
                 .redirectionEndpoint(endpoint -> endpoint
                     .baseUri(authProperties.redirectionUri()))
                 .userInfoEndpoint(endpoint -> endpoint
                     .userService(OAuth2Service))
                 .successHandler(successHandler)
             )
+            .addFilterBefore(authorizationCodeFilter, OAuth2LoginAuthenticationFilter.class)
             .addFilterBefore(jwtAuthorizationFilter, AuthorizationFilter.class)
             .httpBasic(
                 AbstractHttpConfigurer::disable
