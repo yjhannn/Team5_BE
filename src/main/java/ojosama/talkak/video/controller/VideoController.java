@@ -11,6 +11,7 @@ import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
+import ojosama.talkak.video.response.AwsS3Response;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.VideoResponse;
@@ -65,9 +66,9 @@ public class VideoController implements VideoApiController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<VideoResponse> uploadShortsVideo(
+    public ResponseEntity<AwsS3Response> uploadShortsVideo(
             @RequestParam("file") MultipartFile file, VideoRequest videoRequest) throws IOException {
-        VideoResponse response = awsS3Service.uploadVideo(file, videoRequest);
+        AwsS3Response response = awsS3Service.uploadVideo(file, videoRequest);
         return ResponseEntity.ok(response);
     }
 

@@ -34,17 +34,17 @@ public class AwsS3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
     @Transactional
-    public VideoResponse uploadVideo(MultipartFile file, VideoRequest videoRequest)
+    public AwsS3Response uploadVideo(MultipartFile file, VideoRequest videoRequest)
         throws IOException {
         try {
             String fileName = file.getOriginalFilename();
-            Video video = new Video(videoRequest.title(), videoRequest.memberId(),
-                videoRequest.categoryId(), fileName);
-            video = videoRepository.save(video);
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null));
-            return new VideoResponse(video.getId(), video.getTitle(), video.getMemberId(),
-                video.getCategoryId(), video.getUniqueFileName());
+            String s3Url = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, fileName);
+            return new AwsS3Response(s3Url);
         } catch (Exception e) {
             throw TalKakException.of(VideoError.S3_UPLOAD_ERROR);
         }
