@@ -39,6 +39,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
         response.getWriter()
-                .write(objectMapper.writeValueAsString(TokenResponse.of(accessToken, refreshToken)));
+            .write(objectMapper.writeValueAsString(
+                TokenResponse.of(accessToken, refreshToken, !oAuth2User.additionalInfoProvided())));
     }
 }
