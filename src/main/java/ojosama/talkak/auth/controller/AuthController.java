@@ -1,9 +1,11 @@
 package ojosama.talkak.auth.controller;
 
 import lombok.RequiredArgsConstructor;
+import ojosama.talkak.auth.dto.LogoutResponse;
 import ojosama.talkak.auth.dto.ReissueRequest;
 import ojosama.talkak.auth.dto.TokenResponse;
 import ojosama.talkak.auth.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,14 @@ public class AuthController implements AuthApiController {
         Long id = Long.valueOf(authentication.getPrincipal().toString());
         TokenResponse tokenResponse = authService.reissue(request.refreshToken(), id);
         return ResponseEntity.ok().body(tokenResponse);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<LogoutResponse> logout(Authentication authentication) {
+        Long id = Long.valueOf(authentication.getPrincipal().toString());
+        authService.logout(id);
+        return ResponseEntity.ok()
+            .body(LogoutResponse.of("성공적으로 로그아웃하였습니다.", HttpStatus.OK));
     }
 
     @GetMapping("/issue")

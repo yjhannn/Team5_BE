@@ -39,6 +39,10 @@ public class AuthService {
         return TokenResponse.of(accessToken, refreshToken);
     }
 
+    public void logout(Long id) {
+        redisUtil.deleteValues(RedisKeyUtil.REFRESH_TOKEN.of(id));
+    }
+
     public TokenResponse issue() {
         Member member = memberRepository.save(Member.of("test", "", "test@test.com"));
         String accessToken = jwtUtil.generateAccessToken(member.getId(), member.getEmail(), member.getUsername());

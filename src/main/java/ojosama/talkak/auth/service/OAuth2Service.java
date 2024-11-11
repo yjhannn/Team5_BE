@@ -1,5 +1,6 @@
 package ojosama.talkak.auth.service;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import ojosama.talkak.auth.dto.GoogleUserDetails;
 import ojosama.talkak.auth.dto.OAuth2UserDetails;
@@ -22,8 +23,9 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
         OAuth2User oAuth2User = defaultOAuth2UserService.loadUser(userRequest);
         GoogleUserDetails userDetails = GoogleUserDetails.from(oAuth2User.getAttributes());
 
-        return OAuth2UserDetails.of(memberRepository.findByEmail(userDetails.email())
-            .orElse(register(userDetails)));
+        Optional<Member> member = memberRepository.findByEmail(userDetails.email());
+        return member.map(OAuth2UserDetails::of)
+            .orElseGet(() -> OAuth2UserDetails.of(register(userDetails)));
     }
 
     private Member register(GoogleUserDetails userDetails) {
