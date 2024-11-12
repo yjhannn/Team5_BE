@@ -50,11 +50,11 @@ public class VideoController implements VideoApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req,
+    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestParam("categoryId") Long categoryId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<VideoInfoResponse> videos = videoService.getVideoByCategory(req, pageable);
+        List<VideoInfoResponse> videos = videoService.getVideoByCategory(new VideoCategoryRequest(categoryId), pageable);
         return ResponseEntity.ok(videos);
     }
 
@@ -99,11 +99,10 @@ public class VideoController implements VideoApiController {
     // 메인페이지에서 유튜브 관련 영상 불러오기(카테고리 지정)
     @GetMapping("/youtube/{categoryId}")
     public ResponseEntity<List<YoutubeApiResponse>> getPopularYoutubeShortsByCategory(
-            @PathVariable("categoryId")
-            YoutubeCategoryRequest youtubeCategoryRequest) throws IOException {
+            @PathVariable Long categoryId) throws IOException {
         long start = System.currentTimeMillis();
         List<YoutubeApiResponse> response = youtubeService.getShortsByCategory(
-                youtubeCategoryRequest);
+                new YoutubeCategoryRequest(categoryId));
         long end = System.currentTimeMillis();
         log.info("카테고리별 쇼츠 Cache 수행시간 : " + (end - start));
 
