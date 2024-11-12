@@ -63,9 +63,6 @@ public class VideoService {
                 videoId)
             .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
 
-        MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
-            member.getImageUrl(), member.getUsername());
-
         reactionService.createReaction(member.getId(), videoId);
         // 조회수 증가
         reactionService.incrementViewCount(video.getCategoryId(), videoId);
