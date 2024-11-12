@@ -6,6 +6,7 @@ import ojosama.talkak.member.dto.AdditionalInfoRequest;
 import ojosama.talkak.member.dto.AdditionalInfoResponse;
 import ojosama.talkak.member.dto.MyPageInfoRequest;
 import ojosama.talkak.member.dto.MyPageInfoResponse;
+import ojosama.talkak.member.dto.OAuthProfileResponse;
 import ojosama.talkak.member.service.MemberService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,13 @@ public class MemberController implements MemberApiController {
     public ResponseEntity<AdditionalInfoResponse> updateAdditionalInfo(@RequestBody AdditionalInfoRequest request, Authentication authentication) {
         Long id = Long.valueOf(authentication.getPrincipal().toString());
         AdditionalInfoResponse response = memberService.updateAdditionalInfo(id, request);
+        return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/me/profile")
+    public ResponseEntity<OAuthProfileResponse> getOAuthProfile(Authentication authentication) {
+        Long id = Long.valueOf(authentication.getPrincipal().toString());
+        OAuthProfileResponse response = memberService.getOAuthProfile(id);
         return ResponseEntity.ok().body(response);
     }
 }

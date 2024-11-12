@@ -1,7 +1,7 @@
 package ojosama.talkak.member.service;
 
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import ojosama.talkak.category.domain.Category;
@@ -17,6 +17,7 @@ import ojosama.talkak.member.dto.AdditionalInfoRequest;
 import ojosama.talkak.member.dto.AdditionalInfoResponse;
 import ojosama.talkak.member.dto.MyPageInfoRequest;
 import ojosama.talkak.member.dto.MyPageInfoResponse;
+import ojosama.talkak.member.dto.OAuthProfileResponse;
 import ojosama.talkak.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -84,6 +85,12 @@ public class MemberService {
 
         return MyPageInfoResponse.of(member,
             memberCategories.stream().map(MemberCategory::getCategory).toList());
+    }
+
+    public OAuthProfileResponse getOAuthProfile(Long id) {
+        Member member = memberRepository.findById(id)
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        return OAuthProfileResponse.of(member.getUsername(), member.getImageUrl());
     }
 
     private void addNewlyIncludedCategories(Set<Long> newDistinctCategoryIds,
