@@ -1,34 +1,33 @@
 package ojosama.talkak.video.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.common.exception.code.MemberError;
 import ojosama.talkak.common.exception.code.VideoError;
+import ojosama.talkak.common.util.WebClientUtil;
 import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
+import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.recommendation.domain.VideoInfo;
 import ojosama.talkak.recommendation.repository.VideoInfoRepository;
-import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.PythonDto;
 import ojosama.talkak.video.request.VideoCategoryRequest;
+import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
 import ojosama.talkak.video.response.MemberInfoResponse;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
-import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationAPIResponse;
-import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
 import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
 import ojosama.talkak.video.util.IdExtractor;
-import ojosama.talkak.common.util.WebClientUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
 
 @Service
 public class VideoService {
@@ -37,6 +36,10 @@ public class VideoService {
     private String YOUTUBE_API_KEY;
     @Value("${youtube.api-url}")
     private String YOUTUBE_API_BASE_URL;
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
+    @Value("${cloud.aws.region.static}")
+    private String region;
 
     private final WebClientUtil webClientUtil;
     private final VideoRepository videoRepository;
@@ -83,12 +86,15 @@ public class VideoService {
             .collect(Collectors.toList());
     }
 
-    public VideoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
+    public VideoInfoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
         PythonDto pythonDto = req.pythonDto();
+        String key = "thumbnails/" + uniqueFileName + ".jpg";
+        String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
         Video video = videoRepository.save(
-            new Video(pythonDto.title(), pythonDto.memberId(), pythonDto.categoryId(), uniqueFileName));
-        return new VideoResponse(video.getId(), video.getTitle(), video.getMemberId(),
-            video.getCategoryId(), video.getUniqueFileName());
+            new Video(pythonDto.title(), pythonDto.memberId(), pythonDto.categoryId(), thumbnail,
+                uniqueFileName));
+        return new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
+            video.getMemberId(), video.getCreatedAt());
     }
 
     public YoutubeUrlValidationResponse validateYoutubeUrl(YoutubeUrlValidationRequest req) {

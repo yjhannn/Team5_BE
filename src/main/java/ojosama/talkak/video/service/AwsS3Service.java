@@ -4,6 +4,8 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,8 +17,8 @@ import ojosama.talkak.common.exception.code.VideoError;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.AwsS3Request;
-import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.response.AwsS3Response;
+import ojosama.talkak.video.util.ThumbnailExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AwsS3Service {
 
+    private final static String thumbnailPath = "src/main/resources/thumbnails/";
     private final AmazonS3 amazonS3;
     private final VideoRepository videoRepository;
 
@@ -41,6 +44,19 @@ public class AwsS3Service {
         try {
             String fileName = file.getOriginalFilename();
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null));
+
+            String thumbnailFilePath = ThumbnailExtractor.extract(file,
+                thumbnailPath + fileName.replace(".mp4", ""));
+            if (thumbnailFilePath == null) {
+                throw new IOException("Failed to extract thumbnail");
+            }
+            File thumbnailFile = new File(thumbnailFilePath);
+            String thumbnailFileName = "thumbnails/" + thumbnailFile.getName();
+            try (FileInputStream thumbnailInputStream = new FileInputStream(thumbnailFile)) {
+                amazonS3.putObject(
+                    new PutObjectRequest(bucket, thumbnailFileName, thumbnailInputStream, null));
+            }
+
             String s3Url = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region,
                 fileName);
             return new AwsS3Response(s3Url);
@@ -62,7 +78,9 @@ public class AwsS3Service {
         for (int i = 0; i < 5; i++) {
             if (i != index) {
                 String key = String.format("%s_%d.mp4", fileName, i);
+                String thumbnailKey = String.format("thumbnails/%s_%d.jpg", fileName, i);
                 amazonS3.deleteObject(bucket, key);
+                amazonS3.deleteObject(bucket, thumbnailKey);
             }
         }
         return String.format("%s_%d.mp4", fileName, index);
