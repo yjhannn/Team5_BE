@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.RequestParam;
         @ApiResponse(responseCode = "C001", description = "존재하지 않는 카테고리입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     public ResponseEntity<List<YoutubeApiResponse>> getPopularYoutubeShortsByCategory(
-        YoutubeCategoryRequest youtubeCategoryRequest) throws IOException;
+        @PathVariable Long categoryId) throws IOException;
 
     @Operation(summary = "특정 영상 불러오기", description = "특정 영상에 대한 자세한 정보 불러오기")
     @ApiResponses(value = {
@@ -59,7 +59,7 @@ import org.springframework.web.bind.annotation.RequestParam;
         @ApiResponse(responseCode = "V004", description = "존재하지 않는 비디오",
             content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestBody VideoCategoryRequest req,
+    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestParam("categoryId") Long categoryId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int size);
 }

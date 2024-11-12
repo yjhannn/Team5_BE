@@ -59,6 +59,7 @@ dependencies {
 	testImplementation "org.testcontainers:testcontainers:1.19.0"
 	testImplementation "org.testcontainers:junit-jupiter:1.19.0"
 	testImplementation 'org.awaitility:awaitility:4.2.0'  // 비동기 대기를 위한 라이브러리
+	testImplementation 'org.apache.commons:commons-collections4:4.4'
 }
 
 tasks.named('test') {
