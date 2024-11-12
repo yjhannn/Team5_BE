@@ -7,10 +7,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import ojosama.talkak.reaction.service.ReactionService;
+import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
+import ojosama.talkak.video.response.AwsS3Response;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.VideoResponse;
@@ -65,9 +67,9 @@ public class VideoController implements VideoApiController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<VideoResponse> uploadShortsVideo(
-            @RequestParam("file") MultipartFile file, VideoRequest videoRequest) throws IOException {
-        VideoResponse response = awsS3Service.uploadVideo(file, videoRequest);
+    public ResponseEntity<AwsS3Response> uploadShortsVideo(
+            @RequestParam("file") MultipartFile file) throws IOException {
+        AwsS3Response response = awsS3Service.uploadVideo(file);
         return ResponseEntity.ok(response);
     }
 
@@ -76,6 +78,13 @@ public class VideoController implements VideoApiController {
             throws MalformedURLException {
         URL downloadUrl = awsS3Service.generateDownloadUrl(videoId);
         return ResponseEntity.ok(downloadUrl);
+    }
+
+    @PostMapping("/highlight-selection")
+    public ResponseEntity<VideoResponse> selectHighlight(@RequestBody HighlightRequest req) {
+        String uniqueFileName = awsS3Service.deleteFilesExceptIndex(req.index(), req.s3Url());
+        VideoResponse response = videoService.createSelectedHighlight(req, uniqueFileName);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/youtube-url-validation")
