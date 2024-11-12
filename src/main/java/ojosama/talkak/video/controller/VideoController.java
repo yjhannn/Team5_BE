@@ -81,9 +81,9 @@ public class VideoController implements VideoApiController {
     }
 
     @PostMapping("/highlight-selection")
-    public ResponseEntity<VideoResponse> selectHighlight(@RequestBody HighlightRequest req) {
+    public ResponseEntity<VideoInfoResponse> selectHighlight(@RequestBody HighlightRequest req) {
         String uniqueFileName = awsS3Service.deleteFilesExceptIndex(req.index(), req.s3Url());
-        VideoResponse response = videoService.createSelectedHighlight(req, uniqueFileName);
+        VideoInfoResponse response = videoService.createSelectedHighlight(req, uniqueFileName);
         return ResponseEntity.ok(response);
     }
 
