@@ -189,7 +189,7 @@ class MemberServiceTest {
 
     private static Member demoMember() {
         return new Member("철수 김", "https://",
-            "abc123@a.com", true, Age.TWENTY, MembershipTier.Basic, 0, new ArrayList<>());
+            "abc123@a.com", true, Age.TWENTY, MembershipTier.Basic, 0, new ArrayList<>(), true);
     }
 
     List<Long> demoCategoryIds(List<String> categoryNames) {
