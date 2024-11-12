@@ -77,7 +77,9 @@ public class AwsS3Service {
         for (int i = 0; i < 5; i++) {
             if (i != index) {
                 String key = String.format("%s_%d.mp4", fileName, i);
+                String thumbnailKey = String.format("thumbnails/%s_%d.jpg", fileName, i);
                 amazonS3.deleteObject(bucket, key);
+                amazonS3.deleteObject(bucket, thumbnailKey);
             }
         }
         return String.format("%s_%d.mp4", fileName, index);
