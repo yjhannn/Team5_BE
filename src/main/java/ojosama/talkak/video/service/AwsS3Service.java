@@ -36,7 +36,7 @@ public class AwsS3Service {
     private String region;
 
     @Transactional
-    public AwsS3Response uploadVideo(MultipartFile file, VideoRequest videoRequest)
+    public AwsS3Response uploadVideo(MultipartFile file)
         throws IOException {
         try {
             String fileName = file.getOriginalFilename();

@@ -68,8 +68,8 @@ public class VideoController implements VideoApiController {
 
     @PostMapping("/upload")
     public ResponseEntity<AwsS3Response> uploadShortsVideo(
-            @RequestParam("file") MultipartFile file, VideoRequest videoRequest) throws IOException {
-        AwsS3Response response = awsS3Service.uploadVideo(file, videoRequest);
+            @RequestParam("file") MultipartFile file) throws IOException {
+        AwsS3Response response = awsS3Service.uploadVideo(file);
         return ResponseEntity.ok(response);
     }
 
