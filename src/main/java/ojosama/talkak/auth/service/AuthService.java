@@ -1,6 +1,7 @@
 package ojosama.talkak.auth.service;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import ojosama.talkak.auth.config.JwtProperties;
 import ojosama.talkak.auth.dto.TokenResponse;
@@ -44,7 +45,7 @@ public class AuthService {
     }
 
     public TokenResponse issue() {
-        Member member = memberRepository.save(Member.of("test", "", "test@test.com"));
+        Member member = memberRepository.save(Member.of("test", "", "test@test.com"+ LocalDateTime.now()));
         String accessToken = jwtUtil.generateAccessToken(member.getId(), member.getEmail(), member.getUsername());
         String refreshToken = jwtUtil.generateRefreshToken();
         return TokenResponse.of(accessToken, refreshToken, !member.getAdditionalInfoProvided());
