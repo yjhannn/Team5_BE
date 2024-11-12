@@ -36,7 +36,7 @@ public class AuthService {
         Duration duration = Duration.ofSeconds(jwtProperties.refreshTokenExpireIn());
         redisUtil.setValues(key, refreshToken, duration);
 
-        return TokenResponse.of(accessToken, refreshToken);
+        return TokenResponse.of(accessToken, refreshToken, !member.getAdditionalInfoProvided());
     }
 
     public void logout(Long id) {
@@ -47,7 +47,7 @@ public class AuthService {
         Member member = memberRepository.save(Member.of("test", "", "test@test.com"));
         String accessToken = jwtUtil.generateAccessToken(member.getId(), member.getEmail(), member.getUsername());
         String refreshToken = jwtUtil.generateRefreshToken();
-        return TokenResponse.of(accessToken, refreshToken);
+        return TokenResponse.of(accessToken, refreshToken, !member.getAdditionalInfoProvided());
     }
 
     private Member findMemberById(Long id) {
