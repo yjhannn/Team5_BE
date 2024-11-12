@@ -30,7 +30,7 @@ public class SuccessHandler implements AuthenticationSuccessHandler {
 
         OAuth2UserDetails oAuth2User = (OAuth2UserDetails) authentication.getPrincipal();
         String accessToken = jwtUtil.generateAccessToken(oAuth2User.id(), oAuth2User.email(), oAuth2User.username());
-        String refreshToken = jwtUtil.generateRefreshToken();
+        String refreshToken = jwtUtil.generateRefreshToken(oAuth2User.id());
 
         String key = RedisKeyUtil.REFRESH_TOKEN.of(oAuth2User.id());
         Duration duration = Duration.ofSeconds(jwtProperties.refreshTokenExpireIn());

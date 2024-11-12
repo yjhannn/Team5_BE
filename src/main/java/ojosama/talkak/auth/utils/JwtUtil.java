@@ -19,6 +19,10 @@ public class JwtUtil {
         this.refreshTokenExpireIn = jwtProperties.refreshTokenExpireIn();
     }
 
+    public String resolveToken(String headerValue) {
+        return headerValue.split(" ")[1].trim();
+    }
+
     public String generateAccessToken(Long id, String email, String username) {
         long current = System.currentTimeMillis();
         return Jwts.builder()
@@ -31,9 +35,10 @@ public class JwtUtil {
             .compact();
     }
 
-    public String generateRefreshToken() {
+    public String generateRefreshToken(Long id) {
         long current = System.currentTimeMillis();
         return Jwts.builder()
+            .subject(id.toString())
             .issuedAt(new Date(current))
             .expiration(new Date(current + refreshTokenExpireIn))
             .signWith(secretKey)
@@ -59,5 +64,15 @@ public class JwtUtil {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject());
+    }
+
+    public boolean isRefreshToken(String token) {
+        return Jwts.parser()
+            .verifyWith(secretKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("username", String.class)
+            == null;
     }
 }

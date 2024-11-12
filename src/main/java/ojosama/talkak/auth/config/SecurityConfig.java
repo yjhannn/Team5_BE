@@ -59,6 +59,7 @@ public class SecurityConfig {
                     .requestMatchers("/h2-console/**").permitAll()
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", swaggerAlias).permitAll()
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
+                    .requestMatchers("/api/reissue").permitAll()
                     .requestMatchers("/api/issue", "/api/videos",
                         "/api/videos/{videoId:\\d+}","/api/videos/youtube/**").permitAll()
                     .anyRequest().authenticated()
