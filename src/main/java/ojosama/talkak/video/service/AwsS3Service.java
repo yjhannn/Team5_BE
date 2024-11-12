@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AwsS3Service {
 
+    private final static String thumbnailPath = "src/main/resources/thumbnails/";
     private final AmazonS3 amazonS3;
     private final VideoRepository videoRepository;
 
@@ -45,7 +46,7 @@ public class AwsS3Service {
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, file.getInputStream(), null));
 
             String thumbnailFilePath = ThumbnailExtractor.extract(file,
-                fileName.replace(".mp4", ""));
+                thumbnailPath + fileName.replace(".mp4", ""));
             if (thumbnailFilePath == null) {
                 throw new IOException("Failed to extract thumbnail");
             }
