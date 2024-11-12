@@ -12,10 +12,13 @@ import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
+import ojosama.talkak.video.request.HighlightRequest;
+import ojosama.talkak.video.request.PythonDto;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.response.MemberInfoResponse;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
+import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationAPIResponse;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
 import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
@@ -41,7 +44,8 @@ public class VideoService {
     private final VideoInfoRepository videoInfoRepository;
     private final ReactionService reactionService;
 
-    public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository, MemberRepository memberRepository,
+    public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository,
+        MemberRepository memberRepository,
         VideoInfoRepository videoInfoRepository, ReactionService reactionService) {
         this.webClientUtil = webClientUtil;
         this.videoRepository = videoRepository;
@@ -55,7 +59,8 @@ public class VideoService {
             .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
         Member member = memberRepository.findById(video.getMemberId())
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
-        VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(), videoId)
+        VideoInfo videoInfo = videoInfoRepository.findByCategoryAndVideoId(video.getCategoryId(),
+                videoId)
             .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
 
         MemberInfoResponse memberInfoResponse = new MemberInfoResponse(member.getId(),
@@ -80,12 +85,22 @@ public class VideoService {
             ))
             .collect(Collectors.toList());
     }
+
+    public VideoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
+        PythonDto pythonDto = req.pythonDto();
+        Video video = videoRepository.save(
+            new Video(pythonDto.title(), pythonDto.memberId(), pythonDto.categoryId(), uniqueFileName));
+        return new VideoResponse(video.getId(), video.getTitle(), video.getMemberId(),
+            video.getCategoryId(), video.getUniqueFileName());
+    }
+
     public YoutubeUrlValidationResponse validateYoutubeUrl(YoutubeUrlValidationRequest req) {
         String videoId = extractVideoIdOrThrow(req.url());
 
         String YOUTUBE_API_URL = youtubeApiRequestUrlBuilder(videoId);
 
-        YoutubeUrlValidationAPIResponse response = webClientUtil.get(YOUTUBE_API_URL, YoutubeUrlValidationAPIResponse.class);
+        YoutubeUrlValidationAPIResponse response = webClientUtil.get(YOUTUBE_API_URL,
+            YoutubeUrlValidationAPIResponse.class);
 
         return new YoutubeUrlValidationResponse(response);
     }
@@ -93,17 +108,17 @@ public class VideoService {
     private String youtubeApiRequestUrlBuilder(String videoId) {
         StringBuilder youtubeApiRequestUrl = new StringBuilder();
         youtubeApiRequestUrl.append(YOUTUBE_API_BASE_URL)
-                .append("?part=snippet")
-                .append("&id=")
-                .append(videoId)
-                .append("&key=")
-                .append(YOUTUBE_API_KEY);
+            .append("?part=snippet")
+            .append("&id=")
+            .append(videoId)
+            .append("&key=")
+            .append(YOUTUBE_API_KEY);
         return youtubeApiRequestUrl.toString();
     }
 
     private String extractVideoIdOrThrow(String url) {
         String videoId = Optional.ofNullable(IdExtractor.extract(url))
-                .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
+            .orElseThrow(() -> TalKakException.of(VideoError.INVALID_VIDEO_ID));
         return videoId;
     }
 }
