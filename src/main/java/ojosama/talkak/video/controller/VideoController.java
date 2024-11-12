@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import ojosama.talkak.reaction.service.ReactionService;
+import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
@@ -77,6 +78,13 @@ public class VideoController implements VideoApiController {
             throws MalformedURLException {
         URL downloadUrl = awsS3Service.generateDownloadUrl(videoId);
         return ResponseEntity.ok(downloadUrl);
+    }
+
+    @PostMapping("/highlight-selection")
+    public ResponseEntity<VideoResponse> selectHighlight(@RequestBody HighlightRequest req) {
+        String uniqueFileName = awsS3Service.deleteFilesExceptIndex(req.index(), req.s3Url());
+        VideoResponse response = videoService.createSelectedHighlight(req, uniqueFileName);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/youtube-url-validation")
