@@ -32,14 +32,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     {
         String headerValue = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (headerValue == null) {
+        if (headerValue == null || jwtUtil.isRefreshToken(jwtUtil.resolveToken(headerValue))) {
             filterChain.doFilter(request, response);
             return;
         }
         if (isValidToken(headerValue)) {
             SecurityContextHolder.getContext()
                 .setAuthentication(
-                    createUsernamePasswordAuthenticationToken(resolveToken(headerValue)));
+                    createUsernamePasswordAuthenticationToken(jwtUtil.resolveToken(headerValue)));
 
             filterChain.doFilter(request, response);
             return;
@@ -60,10 +60,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private Long getIdFromToken(String token) {
         return jwtUtil.getIdFromToken(token);
-    }
-
-    private String resolveToken(String headerValue) {
-        return headerValue.split(" ")[1].trim();
     }
 
     private void handleInvalidAccessTokenException(HttpServletResponse response) throws IOException {

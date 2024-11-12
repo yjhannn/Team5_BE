@@ -24,14 +24,15 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final JwtProperties jwtProperties;
 
-    public TokenResponse reissue(String refreshToken, Long id) {
+    public TokenResponse reissue(String refreshToken) {
         if (!jwtUtil.isValidToken(refreshToken)) {
             throw TalKakException.of(AuthError.INVALID_REFRESH_TOKEN);
         }
+        Long id = jwtUtil.getIdFromToken(refreshToken);
         Member member = findMemberById(id);
 
         String accessToken = jwtUtil.generateAccessToken(id, member.getEmail(), member.getUsername());
-        refreshToken = jwtUtil.generateRefreshToken();
+        refreshToken = jwtUtil.generateRefreshToken(id);
 
         String key = RedisKeyUtil.REFRESH_TOKEN.of(id);
         Duration duration = Duration.ofSeconds(jwtProperties.refreshTokenExpireIn());
@@ -47,7 +48,7 @@ public class AuthService {
     public TokenResponse issue() {
         Member member = memberRepository.save(Member.of("test", "", "test@test.com"+ LocalDateTime.now()));
         String accessToken = jwtUtil.generateAccessToken(member.getId(), member.getEmail(), member.getUsername());
-        String refreshToken = jwtUtil.generateRefreshToken();
+        String refreshToken = jwtUtil.generateRefreshToken(member.getId());
         return TokenResponse.of(accessToken, refreshToken, !member.getAdditionalInfoProvided());
     }
 
