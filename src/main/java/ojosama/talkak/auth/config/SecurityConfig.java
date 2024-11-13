@@ -60,8 +60,8 @@ public class SecurityConfig {
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", swaggerAlias).permitAll()
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
                     .requestMatchers("/api/reissue").permitAll()
-                    .requestMatchers("/api/issue", "/api/videos",
-                        "/api/videos/{videoId:\\d+}","/api/videos/youtube/**").permitAll()
+                    .requestMatchers("/api/issue").permitAll()
+                    .requestMatchers("/api/videos/**").permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2Login((oauth2Login) -> oauth2Login
