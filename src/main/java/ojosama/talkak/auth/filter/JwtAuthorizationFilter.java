@@ -40,11 +40,15 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     {
         String headerValue = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if (headerValue == null || jwtUtil.isRefreshToken(jwtUtil.resolveToken(headerValue))) {
+        if (headerValue == null) {
             filterChain.doFilter(request, response);
             return;
         }
         if (isValidToken(headerValue)) {
+            if (jwtUtil.isRefreshToken(jwtUtil.resolveToken(headerValue))) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             SecurityContextHolder.getContext()
                 .setAuthentication(
                     createUsernamePasswordAuthenticationToken(jwtUtil.resolveToken(headerValue)));
@@ -52,7 +56,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        handleInvalidAccessTokenException(response);
+        handleInvalidTokenException(response);
     }
 
     private boolean isValidToken(String value) {
@@ -70,12 +74,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return jwtUtil.getIdFromToken(token);
     }
 
-    private void handleInvalidAccessTokenException(HttpServletResponse response) throws IOException {
+    private void handleInvalidTokenException(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        AuthError error = AuthError.INVALID_ACCESS_TOKEN;
+        AuthError error = AuthError.INVALID_TOKEN;
         response.getWriter()
             .write(objectMapper.writeValueAsString(
                 ErrorResponse.of(error.status(), error.code(), error.message())));

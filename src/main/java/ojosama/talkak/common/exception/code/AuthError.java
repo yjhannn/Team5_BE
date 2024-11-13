@@ -8,7 +8,8 @@ public enum AuthError implements ErrorCode {
 
     /* 401 Unauthorized */
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, "A001", "유효하지 않은 access token입니다."),
-    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 refresh token입니다.");
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "A002", "유효하지 않은 refresh token입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A003", "만료된 토큰입니다.");
 
     private final HttpStatus status;
     private final String code;
