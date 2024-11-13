@@ -12,7 +12,7 @@ import ojosama.talkak.member.dto.AdditionalInfoRequest;
 import ojosama.talkak.member.dto.AdditionalInfoResponse;
 import ojosama.talkak.member.dto.MyPageInfoRequest;
 import ojosama.talkak.member.dto.MyPageInfoResponse;
-import ojosama.talkak.member.dto.OAuthProfileResponse;
+import ojosama.talkak.member.dto.ProfileResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,10 +47,10 @@ public interface MemberApiController {
     })
     ResponseEntity<MyPageInfoResponse> updateMemberInfo(@RequestBody @Valid MyPageInfoRequest myPageInfoRequest, Authentication authentication);
 
-    @Operation(summary = "Google 프로필 조회", description = "Google 프로필을 조회합니다.")
+    @Operation(summary = "프로필 조회", description = "프로필을 조회합니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Google 프로필 조회 성공"),
         @ApiResponse(responseCode = "M001", description = "존재하지 않는 회원입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<OAuthProfileResponse> getOAuthProfile(Authentication authentication);
+    ResponseEntity<ProfileResponse> getProfile(Authentication authentication);
 }
