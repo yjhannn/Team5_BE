@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -27,11 +28,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
     private final List<String> skipPaths;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return skipPaths.stream().anyMatch(path::startsWith);
+        return skipPaths.stream()
+            .anyMatch(pattern -> antPathMatcher.match(pattern, path));
     }
 
     @Override
@@ -39,7 +42,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException
     {
         String headerValue = request.getHeader(HttpHeaders.AUTHORIZATION);
-
+        System.out.println("headerValue = " + headerValue);
         if (headerValue == null) {
             filterChain.doFilter(request, response);
             return;

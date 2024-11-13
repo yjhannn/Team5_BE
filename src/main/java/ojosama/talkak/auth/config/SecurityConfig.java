@@ -50,10 +50,6 @@ public class SecurityConfig {
                 (cors) ->
                     cors.configurationSource(corsConfigurationSource())
             )
-            .sessionManagement(
-                sessionManagement -> sessionManagement
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
             .authorizeHttpRequests(
                 (authorizeRequests) -> authorizeRequests
                     .requestMatchers("/h2-console/**").permitAll()
@@ -63,6 +59,10 @@ public class SecurityConfig {
                     .requestMatchers("/api/issue").permitAll()
                     .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**").permitAll()
                     .anyRequest().authenticated()
+            )
+            .sessionManagement(
+                sessionManagement -> sessionManagement
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
             .oauth2Login((oauth2Login) -> oauth2Login
                 .authorizationEndpoint(endpoint -> endpoint
