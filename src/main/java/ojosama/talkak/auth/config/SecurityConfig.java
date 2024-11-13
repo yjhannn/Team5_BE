@@ -61,7 +61,7 @@ public class SecurityConfig {
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
                     .requestMatchers("/api/reissue").permitAll()
                     .requestMatchers("/api/issue").permitAll()
-                    .requestMatchers("/api/videos/**").permitAll()
+                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**").permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2Login((oauth2Login) -> oauth2Login
