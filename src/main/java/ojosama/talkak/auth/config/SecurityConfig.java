@@ -9,6 +9,7 @@ import ojosama.talkak.auth.service.StatelessAuthorizationRequestRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -58,6 +59,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/reissue").permitAll()
                     .requestMatchers("/api/issue").permitAll()
                     .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/videos/{videoId:\\d+}/comments").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(
