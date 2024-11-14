@@ -6,10 +6,11 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import ojosama.talkak.common.exception.ErrorResponse;
+import ojosama.talkak.common.exception.code.AuthError;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -42,35 +43,19 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private void handleJsonResponse(HttpServletRequest request, HttpServletResponse response,
         AuthenticationException authException) throws IOException {
 
-        Exception exception = (Exception) request.getAttribute("exception");
+        AuthError errorType = AuthError.from(
+            (Exception) request.getAttribute("exception")
+        );
 
-        HttpStatus status = null;
-        String message = null;
-        String error = null;
-
-        if (exception != null) {
-            if (exception instanceof ExpiredJwtException) {
-                status = HttpStatus.UNAUTHORIZED;
-                message = "토큰이 만료되었습니다.";
-                error = "Token Expired";
-            }
-            // ... 다른 예외 처리
-        } else {
-            status = HttpStatus.UNAUTHORIZED;
-            message = "인증에 실패했습니다.";
-            error = "Unauthorized";
-        }
-
-        response.setStatus(status.value());
+        response.setStatus(errorType.status().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", new Date());
-        errorResponse.put("status", status.value());
-        errorResponse.put("error", error);
-        errorResponse.put("message", message);
-        errorResponse.put("path", request.getRequestURI());
+        ErrorResponse errorResponse = ErrorResponse.of(
+            errorType.status(),
+            errorType.message(),
+            errorType.code()
+        );
 
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
