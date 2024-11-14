@@ -1,50 +1,52 @@
 package ojosama.talkak.video.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
 import ojosama.talkak.common.exception.TalKakException;
 import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.recommendation.domain.VideoInfo;
+import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
+import ojosama.talkak.video.service.VideoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class MockVideoServiceTest {
+
     @Mock
     private VideoRepository videoRepository;
-
     @Mock
     private MemberRepository memberRepository;
-
     @Mock
     private ReactionService reactionService;
+    @Mock
+    private VideoInfoRepository videoInfoRepository;
 
     @InjectMocks
-    @Autowired
     private VideoService videoService;
-
     private Member testMember;
     private Video testVideo;
     private VideoInfo testVideoInfo;
@@ -62,6 +64,7 @@ public class MockVideoServiceTest {
         // 테스트 비디오 정보 생성
         testVideoInfo = VideoInfo.of(LocalDateTime.now(), 100L, 10L);
     }
+
     @Test
     @DisplayName("특정 영상 불러오기 성공")
     void testGetVideoDetailsByVideoId() {
@@ -73,6 +76,7 @@ public class MockVideoServiceTest {
         given(videoRepository.findById(videoId)).willReturn(Optional.of(testVideo));
         given(memberRepository.findById(memberId)).willReturn(Optional.of(testMember));
         given(reactionService.incrementViewCount(testVideo.getCategoryId(), videoId)).willReturn(testVideoInfo);
+        given(videoInfoRepository.findByCategoryAndVideoId(testVideo.getCategoryId(), videoId)).willReturn(Optional.of(testVideoInfo));
 
         // when
         VideoDetailsResponse response = videoService.getVideoDetailsByVideoId(videoId);
@@ -116,4 +120,3 @@ public class MockVideoServiceTest {
         assertThat(responseList.get(0).videoId()).isEqualTo(testVideo.getId());
     }
 }
-
