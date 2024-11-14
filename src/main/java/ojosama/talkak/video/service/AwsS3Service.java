@@ -73,8 +73,7 @@ public class AwsS3Service {
         return new URL(response.url());
     }
 
-    public String deleteFilesExceptIndex(Integer index, String s3Url) {
-        String fileName = extractBaseFileName(s3Url);
+    public String deleteFilesExceptIndex(Integer index, String fileName) {
         for (int i = 0; i < 5; i++) {
             if (i != index) {
                 String key = String.format("%s_%d.mp4", fileName, i);
