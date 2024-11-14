@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VideoService {
@@ -87,6 +88,14 @@ public class VideoService {
                 video.getCreatedAt()
             ))
             .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Video createVideo(String title, Long memberId, Long categoryId, String fileName) {
+        String key = "thumbnails/" + fileName + ".jpg";
+        String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+        Video video = new Video(title, memberId, categoryId, thumbnail, fileName);
+        return videoRepository.save(video);
     }
 
     public VideoInfoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
