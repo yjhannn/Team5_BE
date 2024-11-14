@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Getter
 public enum CategoryType {
-    MUSIC("음악"), JOURNEY("여행"), GAME("게임"), SPORT("스포츠"), FOOD("음식");
+    FOOD("음식"), JOURNEY("여행"), GAME("게임"), MUSIC("음악"), SPORT("스포츠");
 
     private final String name;
 
