@@ -77,6 +77,19 @@ public class VideoController implements VideoApiController {
         return ResponseEntity.ok(downloadUrl);
     }
 
+    @PostMapping("/createByParams")
+    public ResponseEntity<VideoInfoResponse> createVideoByRequestParams(
+        @RequestParam String title,
+        @RequestParam Long memberId,
+        @RequestParam Long categoryId,
+        @RequestParam String fileName
+        ) {
+        Video video = videoService.createVideo(title, memberId, categoryId, fileName);
+        return new ResponseEntity<>(
+            new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
+                video.getMemberId(), video.getCreatedAt()), HttpStatus.CREATED);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<VideoInfoResponse> createVideo(@RequestBody VideoRequest videoRequest) {
         Video video = videoService.createVideo(
