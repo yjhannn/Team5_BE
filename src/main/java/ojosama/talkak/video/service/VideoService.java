@@ -91,17 +91,16 @@ public class VideoService {
     }
 
     public VideoInfoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
-        PythonDto pythonDto = req.pythonDto();
         String key = "thumbnails/" + uniqueFileName + ".jpg";
         String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
 
-        Member member = memberRepository.findById(req.pythonDto().memberId())
+        Member member = memberRepository.findById(req.memberId())
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
-        CategoryType category = categoryRepository.findCategoryTypeById(req.pythonDto().categoryId())
+        CategoryType category = categoryRepository.findCategoryTypeById(req.categoryId())
             .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
 
         Video video = videoRepository.save(
-            new Video(pythonDto.title(), pythonDto.memberId(), pythonDto.categoryId(), thumbnail,
+            new Video(req.title(), req.memberId(), req.categoryId(), thumbnail,
                 uniqueFileName));
         return new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
             video.getMemberId(), video.getCreatedAt());
