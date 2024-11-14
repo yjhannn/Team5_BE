@@ -22,8 +22,8 @@ public class ReactionController implements ReactionApiController {
     @PostMapping("/like")
     public ResponseEntity<Void> toggleLike(
         @PathVariable Long videoId, Authentication authentication) {
-        Long id = Long.valueOf(authentication.getPrincipal().toString());
-        reactionService.toggleLike(videoId, id);
+        Long memberId = Long.valueOf(authentication.getPrincipal().toString());
+        reactionService.toggleLike(memberId, videoId);
         return ResponseEntity.ok().build();
     }
 }
