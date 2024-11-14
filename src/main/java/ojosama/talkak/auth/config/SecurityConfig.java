@@ -33,6 +33,7 @@ public class SecurityConfig {
     private final AuthorizationCodeFilter authorizationCodeFilter;
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
     private final AuthProperties authProperties;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Value("${springdoc.swagger-ui.path}")
     private String swaggerAlias;
@@ -40,6 +41,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(authenticationEntryPoint)  // 커스텀 EntryPoint 등록
+            )
             .headers(
                 (headers) ->
                     headers.frameOptions(FrameOptionsConfig::disable)
