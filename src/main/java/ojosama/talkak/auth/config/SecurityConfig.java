@@ -9,6 +9,7 @@ import ojosama.talkak.auth.service.StatelessAuthorizationRequestRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,6 +33,7 @@ public class SecurityConfig {
     private final AuthorizationCodeFilter authorizationCodeFilter;
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
     private final AuthProperties authProperties;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
 
     @Value("${springdoc.swagger-ui.path}")
     private String swaggerAlias;
@@ -39,6 +41,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(authenticationEntryPoint)  // 커스텀 EntryPoint 등록
+            )
             .headers(
                 (headers) ->
                     headers.frameOptions(FrameOptionsConfig::disable)
@@ -57,7 +62,8 @@ public class SecurityConfig {
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
                     .requestMatchers("/api/reissue").permitAll()
                     .requestMatchers("/api/issue").permitAll()
-                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**").permitAll()
+                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**", "/error").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/videos/{videoId:\\d+}/comments").permitAll()
                     .anyRequest().authenticated()
             )
             .sessionManagement(
@@ -94,7 +100,7 @@ public class SecurityConfig {
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addExposedHeader("*");
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedOriginPattern("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);

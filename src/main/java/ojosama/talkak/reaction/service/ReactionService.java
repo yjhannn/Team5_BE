@@ -43,6 +43,7 @@ public class ReactionService {
                 }, ()
                     -> {
                     createReaction(member.getId(), video.getId());
+                    incrementLikeCount(video.getCategoryId(), video.getId());
                 }
             );
     }
