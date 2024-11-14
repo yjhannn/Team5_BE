@@ -3,7 +3,10 @@ package ojosama.talkak.video.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import ojosama.talkak.category.domain.CategoryType;
+import ojosama.talkak.category.repository.CategoryRepository;
 import ojosama.talkak.common.exception.TalKakException;
+import ojosama.talkak.common.exception.code.CategoryError;
 import ojosama.talkak.common.exception.code.MemberError;
 import ojosama.talkak.common.exception.code.VideoError;
 import ojosama.talkak.common.util.WebClientUtil;
@@ -18,7 +21,6 @@ import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.PythonDto;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
-import ojosama.talkak.video.response.MemberInfoResponse;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationAPIResponse;
@@ -44,14 +46,16 @@ public class VideoService {
     private final WebClientUtil webClientUtil;
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
+    private final CategoryRepository categoryRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final ReactionService reactionService;
 
     public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository,
-        MemberRepository memberRepository,
+        MemberRepository memberRepository, CategoryRepository categoryRepository,
         VideoInfoRepository videoInfoRepository, ReactionService reactionService) {
         this.webClientUtil = webClientUtil;
         this.videoRepository = videoRepository;
+        this.categoryRepository = categoryRepository;
         this.memberRepository = memberRepository;
         this.videoInfoRepository = videoInfoRepository;
         this.reactionService = reactionService;
@@ -90,6 +94,12 @@ public class VideoService {
         PythonDto pythonDto = req.pythonDto();
         String key = "thumbnails/" + uniqueFileName + ".jpg";
         String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+
+        Member member = memberRepository.findById(req.pythonDto().memberId())
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        CategoryType category = categoryRepository.findCategoryTypeById(req.pythonDto().categoryId())
+            .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
+
         Video video = videoRepository.save(
             new Video(pythonDto.title(), pythonDto.memberId(), pythonDto.categoryId(), thumbnail,
                 uniqueFileName));
