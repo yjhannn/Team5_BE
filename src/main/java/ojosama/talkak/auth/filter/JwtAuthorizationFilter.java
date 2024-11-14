@@ -42,7 +42,6 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException
     {
         String headerValue = request.getHeader(HttpHeaders.AUTHORIZATION);
-        System.out.println("headerValue = " + headerValue);
         if (headerValue == null) {
             filterChain.doFilter(request, response);
             return;
