@@ -18,7 +18,6 @@ import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.HighlightRequest;
-import ojosama.talkak.video.request.PythonDto;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
 import ojosama.talkak.video.response.VideoDetailsResponse;
