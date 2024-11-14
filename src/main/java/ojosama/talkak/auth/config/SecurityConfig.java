@@ -58,7 +58,7 @@ public class SecurityConfig {
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
                     .requestMatchers("/api/reissue").permitAll()
                     .requestMatchers("/api/issue").permitAll()
-                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**", "/error").permitAll()
+                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/videos/{videoId:\\d+}/comments").permitAll()
                     .anyRequest().authenticated()
             )
