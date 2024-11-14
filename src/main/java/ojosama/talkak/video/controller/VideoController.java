@@ -66,13 +66,6 @@ public class VideoController implements VideoApiController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/upload")
-    public ResponseEntity<AwsS3Response> uploadShortsVideo(
-            @RequestParam("file") MultipartFile file) throws IOException {
-        AwsS3Response response = awsS3Service.uploadVideo(file);
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping("/{videoId}/extract")
     public ResponseEntity<URL> downloadVideo(@PathVariable Long videoId)
             throws MalformedURLException {
