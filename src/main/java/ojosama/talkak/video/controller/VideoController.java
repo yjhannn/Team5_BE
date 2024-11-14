@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import ojosama.talkak.reaction.service.ReactionService;
+import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
@@ -23,6 +24,7 @@ import ojosama.talkak.video.service.VideoService;
 import ojosama.talkak.video.service.YoutubeService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -44,7 +46,7 @@ public class VideoController implements VideoApiController {
     private final ReactionService reactionService;
 
     public VideoController(VideoService videoService, YoutubeService youtubeService,
-                           AwsS3Service awsS3Service, ReactionService reactionService) {
+        AwsS3Service awsS3Service, ReactionService reactionService) {
         this.videoService = videoService;
         this.youtubeService = youtubeService;
         this.awsS3Service = awsS3Service;
@@ -52,11 +54,13 @@ public class VideoController implements VideoApiController {
     }
 
     @GetMapping
-    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(@RequestParam("categoryId") Long categoryId,
+    public ResponseEntity<List<VideoInfoResponse>> getPopularVideosByCategory(
+        @RequestParam("categoryId") Long categoryId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<VideoInfoResponse> videos = videoService.getVideoByCategory(new VideoCategoryRequest(categoryId), pageable);
+        List<VideoInfoResponse> videos = videoService.getVideoByCategory(
+            new VideoCategoryRequest(categoryId), pageable);
         return ResponseEntity.ok(videos);
     }
 
@@ -68,9 +72,22 @@ public class VideoController implements VideoApiController {
 
     @GetMapping("/{videoId}/extract")
     public ResponseEntity<URL> downloadVideo(@PathVariable Long videoId)
-            throws MalformedURLException {
+        throws MalformedURLException {
         URL downloadUrl = awsS3Service.generateDownloadUrl(videoId);
         return ResponseEntity.ok(downloadUrl);
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<VideoInfoResponse> createVideo(@RequestBody VideoRequest videoRequest) {
+        Video video = videoService.createVideo(
+            videoRequest.title(),
+            videoRequest.memberId(),
+            videoRequest.categoryId(),
+            videoRequest.fileName()
+        );
+        return new ResponseEntity<>(
+            new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
+                video.getMemberId(), video.getCreatedAt()), HttpStatus.CREATED);
     }
 
     @PostMapping("/highlight-selection")
@@ -82,7 +99,7 @@ public class VideoController implements VideoApiController {
 
     @PostMapping("/youtube-url-validation")
     public ResponseEntity<YoutubeUrlValidationResponse> validateYoutubeUrl(
-            @RequestBody YoutubeUrlValidationRequest req) {
+        @RequestBody YoutubeUrlValidationRequest req) {
         YoutubeUrlValidationResponse response = videoService.validateYoutubeUrl(req);
         return ResponseEntity.ok(response);
     }
@@ -101,10 +118,10 @@ public class VideoController implements VideoApiController {
     // 메인페이지에서 유튜브 관련 영상 불러오기(카테고리 지정)
     @GetMapping("/youtube/{categoryId}")
     public ResponseEntity<List<YoutubeApiResponse>> getPopularYoutubeShortsByCategory(
-            @PathVariable Long categoryId) throws IOException {
+        @PathVariable Long categoryId) throws IOException {
         long start = System.currentTimeMillis();
         List<YoutubeApiResponse> response = youtubeService.getShortsByCategory(
-                new YoutubeCategoryRequest(categoryId));
+            new YoutubeCategoryRequest(categoryId));
         long end = System.currentTimeMillis();
         log.info("카테고리별 쇼츠 Cache 수행시간 : " + (end - start));
 
