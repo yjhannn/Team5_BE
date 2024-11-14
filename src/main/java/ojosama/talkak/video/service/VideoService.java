@@ -3,7 +3,10 @@ package ojosama.talkak.video.service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import ojosama.talkak.category.domain.CategoryType;
+import ojosama.talkak.category.repository.CategoryRepository;
 import ojosama.talkak.common.exception.TalKakException;
+import ojosama.talkak.common.exception.code.CategoryError;
 import ojosama.talkak.common.exception.code.MemberError;
 import ojosama.talkak.common.exception.code.VideoError;
 import ojosama.talkak.common.util.WebClientUtil;
@@ -15,10 +18,8 @@ import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
 import ojosama.talkak.video.request.HighlightRequest;
-import ojosama.talkak.video.request.PythonDto;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
-import ojosama.talkak.video.response.MemberInfoResponse;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationAPIResponse;
@@ -28,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class VideoService {
@@ -44,14 +46,16 @@ public class VideoService {
     private final WebClientUtil webClientUtil;
     private final VideoRepository videoRepository;
     private final MemberRepository memberRepository;
+    private final CategoryRepository categoryRepository;
     private final VideoInfoRepository videoInfoRepository;
     private final ReactionService reactionService;
 
     public VideoService(WebClientUtil webClientUtil, VideoRepository videoRepository,
-        MemberRepository memberRepository,
+        MemberRepository memberRepository, CategoryRepository categoryRepository,
         VideoInfoRepository videoInfoRepository, ReactionService reactionService) {
         this.webClientUtil = webClientUtil;
         this.videoRepository = videoRepository;
+        this.categoryRepository = categoryRepository;
         this.memberRepository = memberRepository;
         this.videoInfoRepository = videoInfoRepository;
         this.reactionService = reactionService;
@@ -86,12 +90,25 @@ public class VideoService {
             .collect(Collectors.toList());
     }
 
+    @Transactional
+    public Video createVideo(String title, Long memberId, Long categoryId, String fileName) {
+        String key = "thumbnails/" + fileName + ".jpg";
+        String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+        Video video = new Video(title, memberId, categoryId, thumbnail, fileName);
+        return videoRepository.save(video);
+    }
+
     public VideoInfoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
-        PythonDto pythonDto = req.pythonDto();
         String key = "thumbnails/" + uniqueFileName + ".jpg";
         String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+
+        Member member = memberRepository.findById(req.memberId())
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        CategoryType category = categoryRepository.findCategoryTypeById(req.categoryId())
+            .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
+
         Video video = videoRepository.save(
-            new Video(pythonDto.title(), pythonDto.memberId(), pythonDto.categoryId(), thumbnail,
+            new Video(req.title(), req.memberId(), req.categoryId(), thumbnail,
                 uniqueFileName));
         return new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
             video.getMemberId(), video.getCreatedAt());

@@ -62,7 +62,7 @@ public class SecurityConfig {
                     .requestMatchers(authProperties.authorizationUri()).permitAll()
                     .requestMatchers("/api/reissue").permitAll()
                     .requestMatchers("/api/issue").permitAll()
-                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**").permitAll()
+                    .requestMatchers("/api/videos", "/api/videos/{videoId:\\d+}", "/api/videos/youtube/**", "/error").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/videos/{videoId:\\d+}/comments").permitAll()
                     .anyRequest().authenticated()
             )
@@ -100,7 +100,7 @@ public class SecurityConfig {
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addExposedHeader("*");
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:5173");
+        corsConfiguration.addAllowedOriginPattern("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);

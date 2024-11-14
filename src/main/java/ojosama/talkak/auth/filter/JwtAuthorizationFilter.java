@@ -81,7 +81,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        AuthError error = AuthError.INVALID_TOKEN;
+        AuthError error = AuthError.EXPIRED_TOKEN;
         response.getWriter()
             .write(objectMapper.writeValueAsString(
                 ErrorResponse.of(error.status(), error.code(), error.message())));
