@@ -79,7 +79,6 @@ public class MyPageTest {
     void success_myPage_info(String gender, String age, List<Long> categories) {
         //given
         MyPageInfoRequest request = new MyPageInfoRequest(gender, age, categories);
-        System.out.println("request.categories().size() = " + request.categories().size());
         //when
         MyPageInfoResponse response = memberService.updateMemberInfo(member.getId(),
             request);
@@ -117,7 +116,6 @@ public class MyPageTest {
     void fail_myPage_info_left(String gender, String age, List<Long> categories) {
         //given
         MyPageInfoRequest request = new MyPageInfoRequest(gender, age, categories);
-        System.out.println("request.categories().size() = " + request.categories().size());
         //when
         assertErrorCode(MemberError.ERROR_UPDATE_MEMBER_INFO,
             () -> memberService.updateMemberInfo(member.getId(),
@@ -131,7 +129,6 @@ public class MyPageTest {
     void fail_myPage_info_right(String gender, String age, List<Long> categories) {
         //given
         MyPageInfoRequest request = new MyPageInfoRequest(gender, age, categories);
-        System.out.println("request.categories().size() = " + request.categories().size());
         //when
         assertErrorCode(MemberError.ERROR_UPDATE_MEMBER_INFO,
             () -> memberService.updateMemberInfo(member.getId(),
