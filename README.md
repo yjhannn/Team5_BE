@@ -83,8 +83,8 @@
 5.	원본 비디오 다운로드 
     업로드된 비디오가 Video 객체로 생성된 후, 사용자는 원본 비디오를 다운로드할 수 있습니다.
     클라이언트는 Spring 웹 애플리케이션의 /api/videos/{videoId}/extract 엔드포인트에 요청하여, 원본 비디오의 AWS S3에 저장된 presigned URL을 받아 로컬로 다운로드할 수 있습니다.
-      
-     ┌────────────┐
+```    
+      ┌────────────┐
       │   Client   │
       └─────┬──────┘
       │
@@ -151,7 +151,7 @@
       ▼
       Client receives presigned URL
       (Download)
-      
+```      
 ## ERD 다이어그램
 
 <img width="1053" alt="스크린샷 2024-11-15 오전 3 28 42" src="https://github.com/user-attachments/assets/20f07d26-fa07-4232-b099-b94441f2eb9f">
