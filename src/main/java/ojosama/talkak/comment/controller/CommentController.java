@@ -30,7 +30,7 @@ public class CommentController implements CommentApiController {
         @PathVariable("videoId") Long videoId, @RequestBody CommentRequest commentRequest,
         Authentication authentication) {
         Long memberId = Long.valueOf(authentication.getPrincipal().toString());
-        return ResponseEntity.ok(commentService.createComment(videoId, memberId, commentRequest));
+        return ResponseEntity.ok(commentService.createComment(memberId, videoId, commentRequest));
     }
 
     @GetMapping

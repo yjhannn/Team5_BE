@@ -79,15 +79,15 @@ public class DemoDataInitializer {
 
                 // 생성자를 통해 모든 값 설정
                 Video video = new Video(title, member1.getId(), category.getId(),
-                    thumbnail, views, likes);
+                    "https://talkak2024.s3.ap-southeast-2.amazonaws.com/0c8d53b5-79cd-44b0-9dd9-0289e8a65cb7_0.mp4",thumbnail, views, likes);
                 videoRepository.save(video);
 
-                // 댓글 생성 (2~3개)
-                int commentCount = new Random().nextInt(2) + 2; // 2~3개의 댓글 생성
-                for (int j = 0; j < commentCount; j++) {
-                    Comment comment = new Comment(member1, video, "댓글 내용 " + j);
-                    commentRepository.save(comment);
-                }
+//                // 댓글 생성 (2~3개)
+//                int commentCount = new Random().nextInt(2) + 2; // 2~3개의 댓글 생성
+//                for (int j = 0; j < commentCount; j++) {
+//                    Comment comment = new Comment(member1, video, "댓글 내용 " + j);
+//                    commentRepository.save(comment);
+//                }
 
                 // Redis에 VideoInfo 저장
                 VideoInfo videoInfo = VideoInfo.of(video.getCreatedAt(), video.getViews(),

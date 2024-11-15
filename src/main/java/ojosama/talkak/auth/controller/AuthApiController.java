@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import ojosama.talkak.auth.dto.ReissueRequest;
+import ojosama.talkak.auth.dto.LogoutResponse;
 import ojosama.talkak.auth.dto.TokenResponse;
 import ojosama.talkak.common.exception.ErrorResponse;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,15 @@ public interface AuthApiController {
             @ApiResponse(responseCode = "A001", description = "유효하지 않은 access token입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "A002", description = "유효하지 않은 refresh token입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
-    ResponseEntity<TokenResponse> reissue(ReissueRequest request, Authentication authentication);
+    ResponseEntity<TokenResponse> reissue(String refreshToken);
+
+    @Operation(summary = "로그아웃", description = "로그아웃을 진행합니다.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "로그아웃 성공"),
+        @ApiResponse(responseCode = "A001", description = "유효하지 않은 access token입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = "A002", description = "유효하지 않은 refresh token입니다.", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    ResponseEntity<LogoutResponse> logout(Authentication authentication);
 
     @Operation(summary = "토큰 발급", description = "테스트용 토큰을 발급받습니다.")
     @ApiResponses(value = {

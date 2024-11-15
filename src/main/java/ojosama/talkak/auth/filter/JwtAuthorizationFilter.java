@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import ojosama.talkak.auth.utils.JwtUtil;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -25,26 +27,38 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper;
+    private final List<String> skipPaths;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return skipPaths.stream()
+            .anyMatch(pattern -> antPathMatcher.match(pattern, path));
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
         FilterChain filterChain) throws ServletException, IOException
     {
         String headerValue = request.getHeader(HttpHeaders.AUTHORIZATION);
-
         if (headerValue == null) {
             filterChain.doFilter(request, response);
             return;
         }
         if (isValidToken(headerValue)) {
+            if (jwtUtil.isRefreshToken(jwtUtil.resolveToken(headerValue))) {
+                filterChain.doFilter(request, response);
+                return;
+            }
             SecurityContextHolder.getContext()
                 .setAuthentication(
-                    createUsernamePasswordAuthenticationToken(resolveToken(headerValue)));
+                    createUsernamePasswordAuthenticationToken(jwtUtil.resolveToken(headerValue)));
 
             filterChain.doFilter(request, response);
             return;
         }
-        handleInvalidAccessTokenException(response);
+        handleInvalidTokenException(response);
     }
 
     private boolean isValidToken(String value) {
@@ -62,16 +76,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         return jwtUtil.getIdFromToken(token);
     }
 
-    private String resolveToken(String headerValue) {
-        return headerValue.split(" ")[1].trim();
-    }
-
-    private void handleInvalidAccessTokenException(HttpServletResponse response) throws IOException {
+    private void handleInvalidTokenException(HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        AuthError error = AuthError.INVALID_ACCESS_TOKEN;
+        AuthError error = AuthError.EXPIRED_TOKEN;
         response.getWriter()
             .write(objectMapper.writeValueAsString(
                 ErrorResponse.of(error.status(), error.code(), error.message())));
