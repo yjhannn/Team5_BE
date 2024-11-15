@@ -1,5 +1,6 @@
 package ojosama.talkak.video.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -100,7 +101,12 @@ public class VideoService {
         CategoryType categoryType = categoryRepository.findCategoryTypeById(categoryId)
             .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
         Video video = new Video(title, memberId, categoryId, thumbnail, videoUrl, fileName);
-        return videoRepository.save(video);
+
+        video = videoRepository.save(video);
+        VideoInfo videoInfo = VideoInfo.of(LocalDateTime.now(), 0L, 0L);
+        videoInfoRepository.save(categoryId, video.getId(), videoInfo);
+
+        return video;
     }
 
     public YoutubeUrlValidationResponse validateYoutubeUrl(YoutubeUrlValidationRequest req) {
