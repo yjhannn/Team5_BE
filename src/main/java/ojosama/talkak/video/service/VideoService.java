@@ -93,12 +93,13 @@ public class VideoService {
     public Video createVideo(String title, Long memberId, Long categoryId, String fileName) {
         String key = "thumbnails/" + fileName.replace(".mp4", ".jpg");
         String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+        String videoUrl = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, fileName);
 
         Member member = memberRepository.findById(memberId)
             .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
         CategoryType categoryType = categoryRepository.findCategoryTypeById(categoryId)
             .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
-        Video video = new Video(title, memberId, categoryId, thumbnail, fileName);
+        Video video = new Video(title, memberId, categoryId, thumbnail, videoUrl, fileName);
         return videoRepository.save(video);
     }
 
