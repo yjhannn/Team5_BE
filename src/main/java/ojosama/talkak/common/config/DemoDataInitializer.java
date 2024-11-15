@@ -82,12 +82,12 @@ public class DemoDataInitializer {
                     thumbnail, views, likes);
                 videoRepository.save(video);
 
-                // 댓글 생성 (2~3개)
-                int commentCount = new Random().nextInt(2) + 2; // 2~3개의 댓글 생성
-                for (int j = 0; j < commentCount; j++) {
-                    Comment comment = new Comment(member1, video, "댓글 내용 " + j);
-                    commentRepository.save(comment);
-                }
+//                // 댓글 생성 (2~3개)
+//                int commentCount = new Random().nextInt(2) + 2; // 2~3개의 댓글 생성
+//                for (int j = 0; j < commentCount; j++) {
+//                    Comment comment = new Comment(member1, video, "댓글 내용 " + j);
+//                    commentRepository.save(comment);
+//                }
 
                 // Redis에 VideoInfo 저장
                 VideoInfo videoInfo = VideoInfo.of(video.getCreatedAt(), video.getViews(),

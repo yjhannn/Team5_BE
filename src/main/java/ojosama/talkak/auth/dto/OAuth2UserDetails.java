@@ -10,14 +10,16 @@ public record OAuth2UserDetails(
     Long id,
     String email,
     String username,
-    String imageUrl
+    String imageUrl,
+    Boolean additionalInfoProvided
 ) implements OAuth2User {
 
     public static OAuth2UserDetails of(Member member) {
         return new OAuth2UserDetails(member.getId(),
             member.getEmail(),
             member.getUsername(),
-            member.getImageUrl());
+            member.getImageUrl(),
+            member.getAdditionalInfoProvided());
     }
 
     @Override

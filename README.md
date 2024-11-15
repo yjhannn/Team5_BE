@@ -34,39 +34,131 @@
 # 주요 기능
 
 **1. 하이라이트 추출 및 숏폼 생성**: AI가 긴 영상에서 주요 장면을 분석하여 자동으로 숏폼 영상으로 편집해주어, 짧은 시간 내에 완성도 높은 콘텐츠를 제작할 수 있습니다.
-<!-- 관련 사진 -->
 
 **2. 커뮤니티 기반 피드백**: 사용자 간에 서로의 콘텐츠에 대해 피드백을 교환하고, 이를 바탕으로 콘텐츠를 개선할 수 있는 커뮤니티 기능을 제공합니다.
-<!-- 관련 사진 -->
 
 **3. 사용자별 추천 영상**: 각 사용자의 관심사와 영상을 분석하여, 개인에게 적합한 흥미로운 콘텐츠를 추천합니다.
-<!-- 관련 사진 -->
 
 # 아키텍쳐
-
-뭐시기 뭐시기 뭐시기
+![기술스택](https://github.com/user-attachments/assets/49ab3399-90a7-49c8-9c59-1499948adda6)
 
 # 기술적 시도
 
 ## Spring Security
 
-뭐시기 뭐시기 뭐시기
+- Youtube Shorts와 접목시킨 서비스로서 사용자 경험을 향상시키기 위해 Google OAuth 2.0 로그인을 도입하였습니다. 
+- Step2에서는 OAuth 2.0을 직접 구현했으나, Step3에서는 Spring Security 프레임워크를 사용해 구현을 개선하였습니다. 
+- 현재 도메인을 통일할 수 없는 환경으로 인해 로그인 후 발급되는 토큰을 쿠키나 세션으로 전달하기 어려웠지만, 보안을 강화하기 위해 OAuth 2.0 인증 프로세스를 변형하고 Spring Security 설정을 커스터마이징하여 최소한의 보안을 확보했습니다.
 
 ## Redis
 
-뭐시기 뭐시기 뭐시기
+- 영상 추천 알고리즘과 좋아요 기능을 구현하기 위해 정보 읽기, 쓰기가 빠른 Redis 저장소를 사용하였습니다.
+- 추천 알고리즘의 경우 유저의 추천 영상을 생성하기 위한 메타데이터(영상 시청 정보, 좋아요 정보, 선호 카테고리 정보)를 기반으로 추천 영상 리스트를 생성하게 하였고, 좋아요 기능은 Redis 동시성 제어 기능을 활용하여 안전하게 전체 좋아요 수가 반영되도록 설계하였습니다. 
+- Docker 컨테이너로 서버에 배포하여 배포의 안정성을 높였고, 테스트용 Redis 컨테이너를 별도로 구성하여 테스트에도 활용될 수 있도록 하였습니다.
 
 ## Ehcache
 
-뭐시기 뭐시기 뭐시기
+- 저희 서비스에서는 많은 양의 외부 API 호출을 효율적으로 처리하기 위해 스프링 내장 캐시인 Ehcache를 도입하여 캐싱 전략을 구현하였습니다. 
+- 인기 있는 유튜브 쇼츠와 카테고리별 쇼츠 영상을 가져올 때, 6시간 간격으로 캐시를 업데이트하여 최신 데이터를 제공하도록 구현했습니다. 
+- 이를 통해 유튜브 쇼츠 레퍼런스 기능에서 자주 요청되는 데이터를 캐싱하여 응답 속도를 개선하고 네트워크 비용을 절감하는데 주력했습니다.
 
 ## OpenAI + FastAPI
 
 > https://github.com/Dockerel/highlight-extractor
+### 데이터 흐름 상세 설명
 
+1.	사용자 요청
+    클라이언트에서 Google 계정으로 로그인한 사용자가 YouTube URL, 제목, 카테고리 등의 정보를 입력합니다.
+    해당 정보는 Spring Framework 웹 애플리케이션에서 FastAPI 애플리케이션의 /extract-highlights 엔드포인트로 전송됩니다.
+2.	비디오 하이라이트 추출 요청 (FastAPI)
+    FastAPI는 요청을 수신한 후, 해당 YouTube 영상을 다운로드하고 사이즈를 조정합니다.
+    Whisper 모델을 이용하여 비디오의 스크립트를 추출하고, GPT 모델을 통해 하이라이트 구간을 탐색합니다.
+    이 과정은 비동기적으로 처리되며, FastAPI는 이 요청에 대해 task_id를 응답으로 반환합니다. task_id는 FastAPI의 로컬 스토리지에서 비동기 작업 상태와 결과 데이터를 관리하는 키로 사용됩니다.
+3.	작업 상태 조회 (Polling)
+    클라이언트는 task_id를 이용해 FastAPI의 /task-status/{task_id} 엔드포인트에 polling을 시도하며 작업 상태를 확인합니다.
+    작업 상태가 “완료”로 변경되면 클라이언트는 FastAPI의 /select-highlight/{task_id} 엔드포인트를 호출하여, 생성된 5개의 하이라이트 후보 영상의 S3 URL과 관련 메타데이터(DTO)를 받아옵니다.
+4.	하이라이트 선택 및 업로드
+    사용자는 5개의 하이라이트 중 하나를 선택하고, 프론트엔드에서 FastAPI의 /select-highlight 엔드포인트로 task_id와 선택한 영상의 인덱스(index)를 전송합니다.
+    FastAPI는 선택한 하이라이트를 Spring Framework 웹 애플리케이션의 /api/videos/create 엔드포인트에 전달하여, 최종적으로 해당 하이라이트를 Video 객체로 웹 서비스에 업로드합니다.
+5.	원본 비디오 다운로드 
+    업로드된 비디오가 Video 객체로 생성된 후, 사용자는 원본 비디오를 다운로드할 수 있습니다.
+    클라이언트는 Spring 웹 애플리케이션의 /api/videos/{videoId}/extract 엔드포인트에 요청하여, 원본 비디오의 AWS S3에 저장된 presigned URL을 받아 로컬로 다운로드할 수 있습니다.
+      
+     ┌────────────┐
+      │   Client   │
+      └─────┬──────┘
+      │
+      (User Input: │ YouTube URL, ...)
+      │
+      ▼
+      ┌─────────────────────────────┐
+      │ Spring Framework Web Server │
+      └─────────────┬───────────────┘
+      │
+      POST /extract-highlights  (video info)
+      │
+      ▼
+      ┌───────────────────┐
+      │   FastAPI Server  │
+      └───────┬───────────┘
+      │
+      ┌──────────────▼───────────────┐
+      │ Background Task (Async)      │
+      │ - Video download             │
+      │ - Resize, Whisper model      │
+      │ - Highlight extraction (GPT) │
+      └──────────────┬───────────────┘
+      │
+      Respond with │ task_id
+      │
+      ▼
+      ┌────────────────────┐
+      │   Client (Polling) │
+      └─────────▲──────────┘
+      │
+      GET /task-status/{task_id}
+      │
+      If Status = "Complete"
+      │
+      ▼
+      GET /select-highlight/{task_id}
+      │
+      │
+      (5 highlight │ S3 URLs)
+      │
+      ▼
+      ┌────────────────────────────┐
+      │ Client selects one video   │
+      │ POST /select-highlight     │
+      └──────────┬─────────────────┘
+      │
+      │
+      ▼
+      ┌───────────────────────────────┐
+      │ Spring Framework Web Server   │
+      │ POST /api/videos/create       │
+      └───────────────────────────────┘
+      │
+      │
+      ▼
+      ┌────────────────────┐
+      │   AWS S3 Storage   │
+      └────────────────────┘
+      │
+      │
+      GET /api/videos/{videoId}/extract
+      │
+      ▼
+      Client receives presigned URL
+      (Download)
+      
 ## ERD 다이어그램
 
 <img width="1053" alt="스크린샷 2024-11-15 오전 3 28 42" src="https://github.com/user-attachments/assets/20f07d26-fa07-4232-b099-b94441f2eb9f">
+
+## 테스트용 계정
+- 이메일: ojosama55@gmail.com
+- 비밀번호: kakao2024
 
 ### 팀명
 

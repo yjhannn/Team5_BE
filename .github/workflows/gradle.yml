@@ -81,7 +81,6 @@ jobs:
           mkdir -p ./ojosama_repo/Team5_BE/src/main/resources
           echo "${{ secrets.APPLICATION }}" > ./ojosama_repo/Team5_BE/src/main/resources/application.properties
           echo "${{ secrets.APPLICATION_PROD }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-prod.properties
-          echo "${{ secrets.APPLICATION_OAUTH }}" > ./ojosama_repo/Team5_BE/src/main/resources/application-oauth.properties
           echo "${{ secrets.APPLICATION_TEST }}" > ./ojosama_repo/Team5_BE/src/test/resources/application-test.properties
 
       - name: Build Spring Boot
@@ -168,7 +167,6 @@ jobs:
             mkdir -p Team5_BE/src/main/resources
             echo "${{ secrets.APPLICATION }}" > Team5_BE/src/main/resources/application.properties
             echo "${{ secrets.APPLICATION_PROD }}" > Team5_BE/src/main/resources/application-prod.properties
-            echo "${{ secrets.APPLICATION_OAUTH }}" > Team5_BE/src/main/resources/application-oauth.properties
             echo "${{ secrets.APPLICATION_TEST }}" > Team5_BE/src/test/resources/application-test.properties
             
             # 컨테이너 재시작

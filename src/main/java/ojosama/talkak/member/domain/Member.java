@@ -37,7 +37,7 @@ public class Member extends BaseEntity {
     private Integer point = 0;
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Comment> comments;
-
+    private Boolean additionalInfoProvided = false;
 
     private Member(String username, String imageUrl, String email) {
         this.username = username;
@@ -51,6 +51,7 @@ public class Member extends BaseEntity {
 
     public void createMemberInfo(String gender, String age) {
         checkMemberInfoInputs(gender, age);
+        additionalInfoProvided = true;
         Age newAge = Age.fromName(age);
         if (!gender.matches("남자|여자") || newAge == null) {
             throw TalKakException.of(MemberError.ERROR_UPDATE_MEMBER_INFO);
