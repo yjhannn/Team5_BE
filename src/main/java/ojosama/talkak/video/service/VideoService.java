@@ -1,5 +1,6 @@
 package ojosama.talkak.video.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -92,8 +93,13 @@ public class VideoService {
 
     @Transactional
     public Video createVideo(String title, Long memberId, Long categoryId, String fileName) {
-        String key = "thumbnails/" + fileName + ".jpg";
+        String key = "thumbnails/" + fileName.replace(".mp4", ".jpg");
         String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        CategoryType categoryType = categoryRepository.findCategoryTypeById(categoryId)
+            .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
         Video video = new Video(title, memberId, categoryId, thumbnail, fileName);
         return videoRepository.save(video);
     }

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import ojosama.talkak.common.exception.TalKakException;
+import ojosama.talkak.common.exception.code.CategoryError;
 import ojosama.talkak.member.domain.Member;
 import ojosama.talkak.member.repository.MemberRepository;
 import ojosama.talkak.reaction.service.ReactionService;
@@ -118,5 +119,21 @@ public class MockVideoServiceTest {
         // then
         assertThat(responseList).hasSize(1);
         assertThat(responseList.get(0).videoId()).isEqualTo(testVideo.getId());
+    }
+
+    @Test
+    @DisplayName("잘못된 카테고리 요청 시 실패")
+    void testGetVideoByInvalidCategory() {
+        // given
+        Long invalidCategoryId = 999L; // 존재하지 않는 카테고리 ID
+        VideoCategoryRequest request = new VideoCategoryRequest(invalidCategoryId);
+        Pageable pageable = PageRequest.of(0, 5);
+
+        // mock 동작 정의 - 잘못된 카테고리 ID로 조회 시 빈 결과 반환 또는 예외 발생 설정
+        given(videoRepository.findByCategoryId(invalidCategoryId, pageable))
+            .willThrow(TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
+
+        // then - 잘못된 카테고리 ID로 요청할 때 예외가 발생하는지 확인
+        assertThrows(TalKakException.class, () -> videoService.getVideoByCategory(request, pageable));
     }
 }
