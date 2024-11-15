@@ -17,7 +17,6 @@ import ojosama.talkak.recommendation.domain.VideoInfo;
 import ojosama.talkak.recommendation.repository.VideoInfoRepository;
 import ojosama.talkak.video.domain.Video;
 import ojosama.talkak.video.repository.VideoRepository;
-import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
 import ojosama.talkak.video.response.VideoDetailsResponse;
@@ -92,26 +91,15 @@ public class VideoService {
 
     @Transactional
     public Video createVideo(String title, Long memberId, Long categoryId, String fileName) {
-        String key = "thumbnails/" + fileName + ".jpg";
+        String key = "thumbnails/" + fileName.replace(".mp4", ".jpg");
         String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
+
+        Member member = memberRepository.findById(memberId)
+            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
+        CategoryType categoryType = categoryRepository.findCategoryTypeById(categoryId)
+            .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
         Video video = new Video(title, memberId, categoryId, thumbnail, fileName);
         return videoRepository.save(video);
-    }
-
-    public VideoInfoResponse createSelectedHighlight(HighlightRequest req, String uniqueFileName) {
-        String key = "thumbnails/" + uniqueFileName + ".jpg";
-        String thumbnail = String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, key);
-
-        Member member = memberRepository.findById(req.memberId())
-            .orElseThrow(() -> TalKakException.of(MemberError.NOT_EXISTING_MEMBER));
-        CategoryType category = categoryRepository.findCategoryTypeById(req.categoryId())
-            .orElseThrow(() -> TalKakException.of(CategoryError.NOT_EXISTING_CATEGORY));
-
-        Video video = videoRepository.save(
-            new Video(req.title(), req.memberId(), req.categoryId(), thumbnail,
-                uniqueFileName));
-        return new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
-            video.getMemberId(), video.getCreatedAt());
     }
 
     public YoutubeUrlValidationResponse validateYoutubeUrl(YoutubeUrlValidationRequest req) {
