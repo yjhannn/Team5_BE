@@ -151,6 +151,7 @@
       ▼
       Client receives presigned URL
       (Download)
+      
 ## ERD 다이어그램
 
 <img width="1053" alt="스크린샷 2024-11-15 오전 3 28 42" src="https://github.com/user-attachments/assets/20f07d26-fa07-4232-b099-b94441f2eb9f">
