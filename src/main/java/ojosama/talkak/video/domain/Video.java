@@ -41,7 +41,14 @@ public class Video extends BaseEntity {
         this.title = title;
         this.countLikes = countLikes;
     }
-
+    public Video(String title, Long memberId, Long categoryId, String thumbnail, String videoUrl, String uniqueFileName) {
+        this.title = title;
+        this.memberId = memberId;
+        this.categoryId = categoryId;
+        this.thumbnail = thumbnail;
+        this.videoUrl = videoUrl;
+        this.uniqueFileName = uniqueFileName;
+    }
     public Video(String title, Long memberId, Long categoryId, String thumbnail, String uniqueFileName) {
         this.title = title;
         this.memberId = memberId;
@@ -56,10 +63,12 @@ public class Video extends BaseEntity {
         this.uniqueFileName = uniqueFileName;
     }
 
-    public Video(String title, Long memberId, Long categoryId, String thumbnail, Long views, Long likes) {
+
+    public Video(String title, Long memberId, Long categoryId, String videoUrl, String thumbnail, Long views, Long likes) {
         this.title = title;
         this.memberId = memberId;
         this.categoryId = categoryId;
+        this.videoUrl = videoUrl;
         this.thumbnail = thumbnail;
         this.views = views;
         this.countLikes = likes;
