@@ -203,3 +203,6 @@ http://ec2-43-202-1-31.ap-northeast-2.compute.amazonaws.com
 ## 🛠️테스트 결과 보고서
 
 [Testing Report](https://quickest-asterisk-75d.notion.site/de33c852391d4e1599721de6136e9c3a?p=1243d1ecfbac437abbffece87f8f7c8a&pm=s)
+
+## 유의사항
+서버 가용량이 부족하여 동시 접속이 어려운 구조인 점 유의 부탁드립니다.
