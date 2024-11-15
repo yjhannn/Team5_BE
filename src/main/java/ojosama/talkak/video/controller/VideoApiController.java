@@ -1,25 +1,22 @@
  package ojosama.talkak.video.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.io.IOException;
-import java.util.List;
-import ojosama.talkak.common.exception.ErrorResponse;
-import ojosama.talkak.video.request.HighlightRequest;
-import ojosama.talkak.video.request.VideoCategoryRequest;
-import ojosama.talkak.video.request.YoutubeCategoryRequest;
-import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
-import ojosama.talkak.video.response.VideoDetailsResponse;
-import ojosama.talkak.video.response.VideoInfoResponse;
-import ojosama.talkak.video.response.YoutubeApiResponse;
-import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+ import io.swagger.v3.oas.annotations.Operation;
+ import io.swagger.v3.oas.annotations.media.Content;
+ import io.swagger.v3.oas.annotations.media.Schema;
+ import io.swagger.v3.oas.annotations.responses.ApiResponse;
+ import io.swagger.v3.oas.annotations.responses.ApiResponses;
+ import java.io.IOException;
+ import java.util.List;
+ import ojosama.talkak.common.exception.ErrorResponse;
+ import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
+ import ojosama.talkak.video.response.VideoDetailsResponse;
+ import ojosama.talkak.video.response.VideoInfoResponse;
+ import ojosama.talkak.video.response.YoutubeApiResponse;
+ import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
+ import org.springframework.http.ResponseEntity;
+ import org.springframework.web.bind.annotation.PathVariable;
+ import org.springframework.web.bind.annotation.RequestBody;
+ import org.springframework.web.bind.annotation.RequestParam;
 
  public interface VideoApiController {
 
@@ -65,13 +62,4 @@ import org.springframework.web.bind.annotation.RequestParam;
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "5") int size);
 
-    @Operation(summary = "하이라이트 영상 선택", description = "추출된 5개의 쇼츠 영상 중 하나를 선택하여 커뮤니티에 업로드하기")
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "쇼츠 업로드 성공"),
-        @ApiResponse(responseCode = "M001", description = "존재하지 않는 회원",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-        @ApiResponse(responseCode = "C001", description = "존재하지 않는 카테고리입니다.",
-            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
-    })
-    public ResponseEntity<VideoInfoResponse> selectHighlight(@RequestBody HighlightRequest req);
 }

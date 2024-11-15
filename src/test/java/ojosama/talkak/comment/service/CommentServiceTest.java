@@ -41,20 +41,24 @@ public class CommentServiceTest {
     private Member member;
     private Video video;
     private Comment comment;
+    Long memberId = 1L;
+    Long videoId = 1L;
+    Long commentId = 1L;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
         member = Member.of("username", "imageurl", "email");
+        member.createIdForTest(1L);
         video = new Video("video title", 0L);
+        video.createIdForTest(1L);
         comment = new Comment(member, video, "This is a comment.");
+        comment.createIdForTest(1L);
     }
 
     @Test
     public void testCreateComment() {
         // Given
-        Long memberId = 1L;
-        Long videoId = 1L;
         CommentRequest commentRequest = new CommentRequest("This is a comment.");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
@@ -73,8 +77,6 @@ public class CommentServiceTest {
     @Test
     public void testCreateComment_InvalidMember() {
         // Given
-        Long memberId = 1L;
-        Long videoId = 1L;
         CommentRequest commentRequest = new CommentRequest("This is a comment.");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.empty());
@@ -90,8 +92,6 @@ public class CommentServiceTest {
     @Test
     public void testCreateComment_InvalidVideo() {
         // Given
-        Long memberId = 1L;
-        Long videoId = 1L;
         CommentRequest commentRequest = new CommentRequest("This is a comment.");
 
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
@@ -107,8 +107,6 @@ public class CommentServiceTest {
     @Test
     public void testGetCommentsByVideoId() {
         // Given
-        Long videoId = 1L;
-
         when(commentRepository.findByVideoId(videoId)).thenReturn(Collections.singletonList(comment));
         when(memberRepository.findById(member.getId())).thenReturn(Optional.of(member));
 
@@ -124,8 +122,6 @@ public class CommentServiceTest {
     @Test
     public void testUpdateComment() {
         // Given
-        Long commentId = 1L;
-        Long memberId = 1L;
         CommentRequest commentRequest = new CommentRequest("Updated comment content.");
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
@@ -143,8 +139,6 @@ public class CommentServiceTest {
     @Test
     public void testUpdateComment_InvalidComment() {
         // Given
-        Long commentId = 1L;
-        Long memberId = 1L;
         CommentRequest commentRequest = new CommentRequest("Updated comment content.");
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
@@ -159,7 +153,6 @@ public class CommentServiceTest {
     @Test
     public void testUpdateComment_UnauthorizedUser() {
         // Given
-        Long commentId = 1L;
         Long memberId = 2L;
         CommentRequest commentRequest = new CommentRequest("Updated comment content.");
 
@@ -177,8 +170,6 @@ public class CommentServiceTest {
     @Test
     public void testDeleteComment() {
         // Given
-        Long commentId = 1L;
-        Long memberId = 1L;
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
         when(memberRepository.findById(memberId)).thenReturn(Optional.of(member));
@@ -193,8 +184,6 @@ public class CommentServiceTest {
     @Test
     public void testDeleteComment_InvalidComment() {
         // Given
-        Long commentId = 1L;
-        Long memberId = 1L;
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
@@ -208,7 +197,6 @@ public class CommentServiceTest {
     @Test
     public void testDeleteComment_UnauthorizedUser() {
         // Given
-        Long commentId = 1L;
         Long memberId = 2L; // Different member
 
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));

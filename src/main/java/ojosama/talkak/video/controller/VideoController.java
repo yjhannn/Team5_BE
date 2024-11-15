@@ -8,15 +8,12 @@ import java.net.URL;
 import java.util.List;
 import ojosama.talkak.reaction.service.ReactionService;
 import ojosama.talkak.video.domain.Video;
-import ojosama.talkak.video.request.HighlightRequest;
 import ojosama.talkak.video.request.VideoCategoryRequest;
 import ojosama.talkak.video.request.VideoRequest;
 import ojosama.talkak.video.request.YoutubeCategoryRequest;
 import ojosama.talkak.video.request.YoutubeUrlValidationRequest;
-import ojosama.talkak.video.response.AwsS3Response;
 import ojosama.talkak.video.response.VideoDetailsResponse;
 import ojosama.talkak.video.response.VideoInfoResponse;
-import ojosama.talkak.video.response.VideoResponse;
 import ojosama.talkak.video.response.YoutubeApiResponse;
 import ojosama.talkak.video.response.YoutubeUrlValidationResponse;
 import ojosama.talkak.video.service.AwsS3Service;
@@ -26,15 +23,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-
-import static org.hibernate.query.sqm.tree.SqmNode.log;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/videos")
@@ -88,13 +83,6 @@ public class VideoController implements VideoApiController {
         return new ResponseEntity<>(
             new VideoInfoResponse(video.getId(), video.getThumbnail(), video.getTitle(),
                 video.getMemberId(), video.getCreatedAt()), HttpStatus.CREATED);
-    }
-
-    @PostMapping("/highlight-selection")
-    public ResponseEntity<VideoInfoResponse> selectHighlight(@RequestBody HighlightRequest req) {
-        String uniqueFileName = awsS3Service.deleteFilesExceptIndex(req.index(), req.fileName());
-        VideoInfoResponse response = videoService.createSelectedHighlight(req, uniqueFileName);
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/youtube-url-validation")
