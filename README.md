@@ -2,6 +2,10 @@
 
 ![image](https://github.com/user-attachments/assets/6c8c813e-f182-4a13-bc21-cf1a7a812382)
 
+## 테스트용 계정
+- 이메일: ojosama55@gmail.com
+- 비밀번호: kakao2024
+
 ## 목차
 
 - [🍪노션 페이지](#-https://quickest-asterisk-75d.notion.site/de33c852391d4e1599721de6136e9c3a)
@@ -155,10 +159,6 @@
 ## ERD 다이어그램
 
 <img width="1053" alt="스크린샷 2024-11-15 오전 3 28 42" src="https://github.com/user-attachments/assets/20f07d26-fa07-4232-b099-b94441f2eb9f">
-
-## 테스트용 계정
-- 이메일: ojosama55@gmail.com
-- 비밀번호: kakao2024
 
 ### 팀명
 
