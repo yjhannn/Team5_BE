@@ -79,7 +79,7 @@ public class DemoDataInitializer {
 
                 // 생성자를 통해 모든 값 설정
                 Video video = new Video(title, member1.getId(), category.getId(),
-                    thumbnail, views, likes);
+                    "https://talkak2024.s3.ap-southeast-2.amazonaws.com/0c8d53b5-79cd-44b0-9dd9-0289e8a65cb7_0.mp4",thumbnail, views, likes);
                 videoRepository.save(video);
 
 //                // 댓글 생성 (2~3개)
