@@ -10,6 +10,7 @@
 
 - [🍪노션 페이지](#-https://quickest-asterisk-75d.notion.site/de33c852391d4e1599721de6136e9c3a)
 - [✨프로젝트 소개](#-https://quickest-asterisk-75d.notion.site/de33c852391d4e1599721de6136e9c3a?p=5f78b4ccb12246eca8f41904e9fce4d6&pm=s)
+- [🙋🏻‍♂️내가 기여한 부분]
 - [🖥️배포 링크](#http://talkak-fe.s3-website.ap-northeast-2.amazonaws.com)
 - [🤝그라운드 룰](#-https://quickest-asterisk-75d.notion.site/de33c852391d4e1599721de6136e9c3a?p=93d3274c7a8b4d159b38b16115c3ff42&pm=s)
 - [📜커밋 컨벤션](#-https://quickest-asterisk-75d.notion.site/de33c852391d4e1599721de6136e9c3a?p=17afc129cb144bfea2fc3cea94ea153d&pm=s)
@@ -45,6 +46,24 @@
 
 # 아키텍쳐
 ![기술스택](https://github.com/user-attachments/assets/49ab3399-90a7-49c8-9c59-1499948adda6)
+
+# 내가 기여한 부분
+## 기능 구현
+- 레퍼런스 기능 구현
+- 영상 추천 알고리즘 메서드 작성
+
+## 성능 향상
+- 캐싱 처리
+- 좋아요 및 조회수 Mysql에서 Redis로 이전
+
+## 테스트
+- 데모데이터 추가
+- 테스트 코드
+
+# 프로젝트 소감
+- 서비스 개발이라는 것은 정말 많은 것을 고려해야 한다. 서비스를 쓰는 고객, 관리자, 기능, 비용 등등... 개발을 진행하면서 API 호출량 제어, 빠른 데이터 처리를 고민하며 기능을 구현해보며 redis, ehcahce 등 다양한 기술들이 있다는 것을 느꼈다. 개발자는 이와 같은 다양한 기술들을 어떻게 학습하고 적용하는지가 정말 중요한 능력이라는 것을 체감할 수 있었다. 그리고 팀프로젝트는 다들 하는 말이지만 소통이 결국 제일 중요하다. 어려운 부분을 공유해야 해결이 빠르다.
+- 팀원들이 진행한 Spring Security, AI 활용에 대해서도 같이 찾아보며 배울 수 있는 점이 많았다. 비록 당시에 큰 도움은 안됐던 것 같지만 그러한 경험을 통해 다양한 지식을 얻을 수 있었다.
+- CI/CD와 배포의 중요성 및 어려움. 그리고 도커를 얼른 배워야겠다. 
 
 # 기술적 시도
 
@@ -179,6 +198,7 @@
 http://talkak-fe.s3-website.ap-northeast-2.amazonaws.com
 
 http://ec2-43-202-1-31.ap-northeast-2.compute.amazonaws.com
+
 
 ## 🤝그라운드 룰
 
