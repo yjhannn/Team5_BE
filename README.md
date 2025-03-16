@@ -50,14 +50,29 @@
 # 내가 기여한 부분
 ## 기능 구현
 - 레퍼런스 기능 구현
+![image](https://github.com/user-attachments/assets/a66183e4-a407-416b-9ab5-b8d1f77778be)
+![image](https://github.com/user-attachments/assets/174ab3fa-85cb-4714-a6de-d6d494c56023)
+    - 전체 유튜브 인기 쇼츠 추출 From Youtube Data API
+    - 특정 카테고리 유튜브 인기 쇼츠 추출 From Youtube Data API
+- 사용자 영상 시청 시 조회 수 증가 및 영상 상세 정보
+![image](https://github.com/user-attachments/assets/ec3395e3-a9eb-46e1-baca-15725784f0dc)
+![image](https://github.com/user-attachments/assets/d82d2b4a-7b03-4466-ae82-ab397058a599)
+  
 - 영상 추천 알고리즘 메서드 작성
-
+https://github.com/yjhannn/recommend-algorithm
 ## 성능 향상
 - 캐싱 처리
+![image](https://github.com/user-attachments/assets/b63a667b-4b83-41b4-8ca8-b3cb3abb3687) 
+![image](https://github.com/user-attachments/assets/c89d19a4-441a-4cba-a80d-6d30b240eac1)
+    - 서비스 성장 시 과도한 외부 API 호출을 방지한 캐싱 작업
+    - 6시간마다 캐시 제거 후 최신 데이터 불러오도록 설정
 - 좋아요 및 조회수 Mysql에서 Redis로 이전
-
+![image](https://github.com/user-attachments/assets/1f8a0042-8e4c-4996-b97a-9ddce8d39597_
+    - 빠른 데이터 조회 및 처리를 위해 Mysql에서 RDBS로 조회수, 좋아요 데이터 이전 작업
 ## 테스트
 - 데모데이터 추가
+  <img width="769" alt="image" src="https://github.com/user-attachments/assets/ce85c778-f0e0-40d1-b983-295571229e8d" />
+    - PostConstruct를 통해 서버 가동 시 특정 데모 데이터 생성되도록 구현
 - 테스트 코드
 
 # 프로젝트 소감
